@@ -1,0 +1,14 @@
+name: catboost
+params:
+  loss_function: Logloss
+  eval_metric: AUC
+  iterations: 1000
+  learning_rate: 0.05
+  depth: 6
+  l2_leaf_reg: 3
+  bootstrap_type: Bayesian
+  bagging_temperature: 1
+  random_seed: 42
+  task_type: CPU
+  thread_count: -1
+early_stopping_rounds: 50

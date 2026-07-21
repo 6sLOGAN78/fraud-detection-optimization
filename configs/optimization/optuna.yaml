@@ -1,0 +1,6 @@
+n_trials: 50
+timeout: 3600
+study_name: optuna_fraud_search
+direction: maximize
+metric: val_auc
+sampler: tpe

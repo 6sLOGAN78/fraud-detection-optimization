@@ -1,0 +1,11 @@
+seed: 42
+cv_folds: 5
+features:
+  selection_threshold: 0.05
+  missing_threshold: 0.9
+  correlation_threshold: 0.95
+model:
+  name: lightgbm
+  learning_rate: 0.05
+  n_estimators: 1000
+  max_depth: 8

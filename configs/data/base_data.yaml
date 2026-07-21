@@ -1,0 +1,13 @@
+train_transaction_file: train_transaction.csv
+train_identity_file: train_identity.csv
+test_transaction_file: test_transaction.csv
+test_identity_file: test_identity.csv
+
+target_col: isFraud
+id_col: TransactionID
+group_col: TransactionDT
+
+features:
+  selection_threshold: 0.05
+  missing_threshold: 0.9
+  correlation_threshold: 0.95

@@ -1,0 +1,626 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage load_data
+    deps:
+    - path: data/raw/test_identity.csv
+      hash: md5
+      md5: 54ae784303f82e5cadeb2d899b05c6a8
+      size: 25797161
+    - path: data/raw/test_transaction.csv
+      hash: md5
+      md5: 7ea6862ef4e078efb309e19fa49178fd
+      size: 613194934
+    - path: data/raw/train_identity.csv
+      hash: md5
+      md5: 8487db5001c8bad139f3318d5d3db416
+      size: 26529680
+    - path: data/raw/train_transaction.csv
+      hash: md5
+      md5: 58b4038d8715f5e11007b826bef00ce7
+      size: 683351067
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/test_identity.parquet
+      hash: md5
+      md5: d9f8ac0ef7a76e2e2580f4ef3b08ebae
+      size: 3691453
+    - path: data/interim/test_transaction.parquet
+      hash: md5
+      md5: 2c5b60ae19c319dbd7a64fc9c2a81b8b
+      size: 65772410
+    - path: data/interim/train_identity.parquet
+      hash: md5
+      md5: 026def4bed4c92c6c6af2276ef52c12e
+      size: 3767120
+    - path: data/interim/train_transaction.parquet
+      hash: md5
+      md5: 22c46c784b94b0a01093f0cfe5e5161b
+      size: 75837585
+  memory_optimization:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage memory_optimization
+    deps:
+    - path: data/interim/test_identity.parquet
+      hash: md5
+      md5: d9f8ac0ef7a76e2e2580f4ef3b08ebae
+      size: 3691453
+    - path: data/interim/test_transaction.parquet
+      hash: md5
+      md5: 2c5b60ae19c319dbd7a64fc9c2a81b8b
+      size: 65772410
+    - path: data/interim/train_identity.parquet
+      hash: md5
+      md5: 026def4bed4c92c6c6af2276ef52c12e
+      size: 3767120
+    - path: data/interim/train_transaction.parquet
+      hash: md5
+      md5: 22c46c784b94b0a01093f0cfe5e5161b
+      size: 75837585
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/test_identity_opt.parquet
+      hash: md5
+      md5: 39714d61ec86fa2d0d813f9bb264ca90
+      size: 3603324
+    - path: data/interim/test_transaction_opt.parquet
+      hash: md5
+      md5: 3d1f0297841ba7665ed42d005c2e7f12
+      size: 65541682
+    - path: data/interim/train_identity_opt.parquet
+      hash: md5
+      md5: 00d650448ebafaac1b67469a4ab95f06
+      size: 3689331
+    - path: data/interim/train_transaction_opt.parquet
+      hash: md5
+      md5: f1e614b6d12e8630a331ee3ff4ea9a63
+      size: 75482103
+    - path: data/metadata/memory_report_train.json
+      hash: md5
+      md5: e000b074a89865a2e838da5413b021ec
+      size: 83173
+  merge_identity:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage merge_identity
+    deps:
+    - path: data/interim/test_identity_opt.parquet
+      hash: md5
+      md5: 39714d61ec86fa2d0d813f9bb264ca90
+      size: 3603324
+    - path: data/interim/test_transaction_opt.parquet
+      hash: md5
+      md5: 3d1f0297841ba7665ed42d005c2e7f12
+      size: 65541682
+    - path: data/interim/train_identity_opt.parquet
+      hash: md5
+      md5: 00d650448ebafaac1b67469a4ab95f06
+      size: 3689331
+    - path: data/interim/train_transaction_opt.parquet
+      hash: md5
+      md5: f1e614b6d12e8630a331ee3ff4ea9a63
+      size: 75482103
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+  quality_assessment:
+    cmd: python3 -m src.pipelines.run_quality_assessment
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/quality.py
+      hash: md5
+      md5: d6c9eef2ed500005b4f45af2be403748
+      size: 47442
+    - path: src/pipelines/run_quality_assessment.py
+      hash: md5
+      md5: 546a0b356d71d8b93ece09b3f64a4cce
+      size: 7969
+    outs:
+    - path: reports/eda/quality/consistency_report.json
+      hash: md5
+      md5: dd4eda4884ea9162de5336462fe3e365
+      size: 550
+    - path: reports/eda/quality/constant_features.csv
+      hash: md5
+      md5: fc635968cfd15bca556399c42f71802b
+      size: 20
+    - path: reports/eda/quality/data_quality_report.html
+      hash: md5
+      md5: e59325dde6be0cbf21054cda7c12aed3
+      size: 25699
+    - path: reports/eda/quality/data_quality_summary.json
+      hash: md5
+      md5: ca8338b4127c7707d234f41ce68c8f7a
+      size: 380
+    - path: reports/eda/quality/duplicate_report.csv
+      hash: md5
+      md5: a7de8ec5d486340dd007ed0e734366f0
+      size: 468
+    - path: reports/eda/quality/infinite_values_report.csv
+      hash: md5
+      md5: 15c2c834eb3ed753c7e0996ec4d4510a
+      size: 45
+    - path: reports/eda/quality/invalid_values_report.csv
+      hash: md5
+      md5: f3a0c67f99ace4ac0856ed938c5d81a4
+      size: 63
+    - path: reports/eda/quality/missing_summary.csv
+      hash: md5
+      md5: c36c62e342b529792252aa1607a667f3
+      size: 41633
+    - path: reports/eda/quality/near_constant_features.csv
+      hash: md5
+      md5: d2612a0d4bb93b98191f519fa4061b45
+      size: 703
+    - path: reports/eda/quality/outlier_summary.csv
+      hash: md5
+      md5: 353fb34da7381a377b3c8e7b9d39a0cc
+      size: 18776
+  missing_value_analysis:
+    cmd: python3 -m src.pipelines.run_missing_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/missing.py
+      hash: md5
+      md5: e46c26b67754c814c974c7ebf23a5edb
+      size: 43884
+    - path: src/pipelines/run_missing_analysis.py
+      hash: md5
+      md5: 63fc574b1697646d4575e5b077983e13
+      size: 2751
+    outs:
+    - path: reports/eda/missing/feature_family_missing.csv
+      hash: md5
+      md5: ad6f796365873256dd8053c7048ed84f
+      size: 791
+    - path: reports/eda/missing/missing_correlation.csv
+      hash: md5
+      md5: 80354cb9b29e6fd4070b12e69b03002d
+      size: 2029892
+    - path: reports/eda/missing/missing_correlation_heatmap.png
+      hash: md5
+      md5: ac58246f24e8d6d382f7738e227df066
+      size: 61559
+    - path: reports/eda/missing/missing_heatmap.png
+      hash: md5
+      md5: 6d8f7a7b33f0f630271e9a6a64ba3e54
+      size: 104960
+    - path: reports/eda/missing/missing_patterns.csv
+      hash: md5
+      md5: fa7a5ed761ed81ab0147ef367ccf6046
+      size: 1455
+    - path: reports/eda/missing/missing_percentage.csv
+      hash: md5
+      md5: d088b86adab29a7b04418e48433f66b7
+      size: 53356
+    - path: reports/eda/missing/missing_recommendations.csv
+      hash: md5
+      md5: 62e66f6c1cc7001e136446017987aea2
+      size: 44287
+    - path: reports/eda/missing/missing_report.html
+      hash: md5
+      md5: e7c4bff5aeb88349c4d97e69c615e93e
+      size: 49085
+    - path: reports/eda/missing/missing_summary.json
+      hash: md5
+      md5: f449d6a011db1009fbf4658ee2e9faba
+      size: 319
+    - path: reports/eda/missing/missing_vs_fraud.csv
+      hash: md5
+      md5: b9bcc589bc111b3f8d3d70e07ae3e7a6
+      size: 48597
+    - path: reports/eda/missing/row_missing_statistics.csv
+      hash: md5
+      md5: 02ddce96a00cb7a85e4a1e3843883500
+      size: 18469634
+    - path: reports/eda/missing/train_test_missing_comparison.csv
+      hash: md5
+      md5: 0b58e438d51bbd3d734892b3bdd37019
+      size: 29858
+  target_analysis:
+    cmd: python3 -m src.pipelines.run_target_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/target.py
+      hash: md5
+      md5: 8815fc2af6691417225773bf1bda3c17
+      size: 48302
+    - path: src/pipelines/run_target_analysis.py
+      hash: md5
+      md5: 22f6a61137f61e72e92697b382516748
+      size: 1506
+    outs:
+    - path: reports/eda/target/class_imbalance_report.csv
+      hash: md5
+      md5: d5829289e4ad08bc7258ad7ecc7876ba
+      size: 399
+    - path: reports/eda/target/fraud_amount_analysis.csv
+      hash: md5
+      md5: 4d2e6a0d86550df04f3ee2a54bb7b453
+      size: 329
+    - path: reports/eda/target/fraud_amount_plot.png
+      hash: md5
+      md5: 24c194fafedb704da565cd09699a3a5e
+      size: 46964
+    - path: reports/eda/target/fraud_by_time.csv
+      hash: md5
+      md5: e81d5eff20e1e98268b85400d24de2e8
+      size: 8151
+    - path: reports/eda/target/fraud_by_time_plot.png
+      hash: md5
+      md5: 5c2b5bf6055a9aeebed503a0f23a8c18
+      size: 269786
+    - path: reports/eda/target/fraud_distribution.csv
+      hash: md5
+      md5: 5cf13d817fdba143ce2f094b8cbec800
+      size: 109
+    - path: reports/eda/target/fraud_distribution.json
+      hash: md5
+      md5: 9cdd366ebc188163db63ce41d32f41b4
+      size: 199
+    - path: reports/eda/target/fraud_distribution_plot.png
+      hash: md5
+      md5: aabc844b05a6f6690c2fa279e9088962
+      size: 34379
+    - path: reports/eda/target/fraud_identity_analysis.csv
+      hash: md5
+      md5: 1aa9e9f5843036f5e09c48b08d567040
+      size: 3334
+    - path: reports/eda/target/fraud_identity_plot.png
+      hash: md5
+      md5: e4c2c75134f5e21e1251936ddaf524a6
+      size: 39958
+    - path: reports/eda/target/fraud_rate_summary.csv
+      hash: md5
+      md5: 2d15946277f1f223249a9d4729e7404c
+      size: 199
+    - path: reports/eda/target/fraud_statistics.csv
+      hash: md5
+      md5: cffa79cd949aa4b6e784349715ca27a9
+      size: 1626
+    - path: reports/eda/target/target_analysis.json
+      hash: md5
+      md5: 920ce37a05703f7de08d043a19179862
+      size: 1346
+    - path: reports/eda/target/target_analysis_report.html
+      hash: md5
+      md5: 6e7c33edf24c56c8e72a7c276c02ce88
+      size: 30840
+  numerical_analysis:
+    cmd: python3 -m src.pipelines.run_numerical_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/numerical.py
+      hash: md5
+      md5: 5e20724e3f83bd37b7af02855b1ee86a
+      size: 43148
+    - path: src/pipelines/run_numerical_analysis.py
+      hash: md5
+      md5: 5cd8f1220aa1f1c8048dbe0f468ff345
+      size: 1091
+    outs:
+    - path: reports/eda/numerical/boxplots/
+      hash: md5
+      md5: 9432c468da5c9c6143384baa473c4573.dir
+      size: 276601
+      nfiles: 11
+    - path: reports/eda/numerical/distribution_statistics.csv
+      hash: md5
+      md5: cddfa4774d772d20a8279bed2a0430eb
+      size: 40051
+    - path: reports/eda/numerical/histograms/
+      hash: md5
+      md5: 67549a4983ccb032747d7e536c989710.dir
+      size: 434005
+      nfiles: 11
+    - path: reports/eda/numerical/kde_plots/
+      hash: md5
+      md5: 8e277fcf9e7d9c768503a54b5ec82766.dir
+      size: 566822
+      nfiles: 11
+    - path: reports/eda/numerical/kurtosis_report.csv
+      hash: md5
+      md5: 1128e0b43787496da3ee49c0e7aa61dc
+      size: 14278
+    - path: reports/eda/numerical/numerical_analysis.json
+      hash: md5
+      md5: 52e0ba39742d38845b2661ff05119833
+      size: 244
+    - path: reports/eda/numerical/numerical_analysis_report.html
+      hash: md5
+      md5: a142f6c92679ef617ba84e44b60ed4b6
+      size: 56323
+    - path: reports/eda/numerical/numerical_feature_summary.json
+      hash: md5
+      md5: c0358073978d1a7d9a7c1441bd84f844
+      size: 6353
+    - path: reports/eda/numerical/numerical_features.csv
+      hash: md5
+      md5: 740092408be5fd187ffd95430228f8fe
+      size: 1901
+    - path: reports/eda/numerical/outlier_analysis.csv
+      hash: md5
+      md5: fea02eaab8e34522a7fb6eb683128703
+      size: 30214
+    - path: reports/eda/numerical/outlier_summary.json
+      hash: md5
+      md5: 7429dd385eb04b5d427725ab7f46bac4
+      size: 76
+    - path: reports/eda/numerical/skewness_report.csv
+      hash: md5
+      md5: 1d16ce6ac396856d9ec030b5a639e443
+      size: 17474
+    - path: reports/eda/numerical/transformation_recommendations.csv
+      hash: md5
+      md5: ec8802ebea8e9e5d707618de5dec4635
+      size: 73639
+    - path: reports/eda/numerical/violin_plots/
+      hash: md5
+      md5: 4ec472cd23a7e9bc219f39d2be927699.dir
+      size: 398481
+      nfiles: 11
+  validate_schema:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage validate_schema
+    deps:
+    - path: data/interim/train_transaction.parquet
+      hash: md5
+      md5: 22c46c784b94b0a01093f0cfe5e5161b
+      size: 75837585
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/metadata/schema.json
+      hash: md5
+      md5: c9cfa6a6786b53ab5ee0f422cb91d588
+      size: 84492
+  quality_checks:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage quality_checks
+    deps:
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/train_quality.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: data/metadata/quality_report.json
+      hash: md5
+      md5: e99695a2a1932b0edfc0ae92f111ad03
+      size: 680
+  missing_analysis:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage missing_analysis
+    deps:
+    - path: data/interim/train_quality.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/train_missing.parquet
+      hash: md5
+      md5: e811f98bbc5a5dd9eff2db2fbc0b6dc3
+      size: 81772244
+    - path: data/metadata/missing_report.csv
+      hash: md5
+      md5: 83a1bc24008077e0fc95064ec6a04ef6
+      size: 12615
+  clean_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage clean_data
+    deps:
+    - path: data/interim/train_missing.parquet
+      hash: md5
+      md5: e811f98bbc5a5dd9eff2db2fbc0b6dc3
+      size: 81772244
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/interim/train_cleaned.parquet
+      hash: md5
+      md5: 775e274d9f30f3827c6443a2258d1c23
+      size: 82573380
+  metadata_generation:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage metadata_generation
+    deps:
+    - path: data/interim/train_cleaned.parquet
+      hash: md5
+      md5: 775e274d9f30f3827c6443a2258d1c23
+      size: 82573380
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/metadata/column_groups.json
+      hash: md5
+      md5: 5f7676f6a58409dd90d87db00c9d992e
+      size: 7276
+    - path: data/metadata/feature_dictionary.json
+      hash: md5
+      md5: bec74145675a2dad7960cc853f81e0ef
+      size: 82267
+  drift_analysis:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage drift_analysis
+    deps:
+    - path: data/interim/test_identity_opt.parquet
+      hash: md5
+      md5: 39714d61ec86fa2d0d813f9bb264ca90
+      size: 3603324
+    - path: data/interim/test_transaction_opt.parquet
+      hash: md5
+      md5: 3d1f0297841ba7665ed42d005c2e7f12
+      size: 65541682
+    - path: data/interim/train_cleaned.parquet
+      hash: md5
+      md5: 775e274d9f30f3827c6443a2258d1c23
+      size: 82573380
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/metadata/drift_report.html
+      hash: md5
+      md5: a0ec884243cbc220f047391bf113a1c9
+      size: 51874
+    - path: data/metadata/ks_scores.csv
+      hash: md5
+      md5: 2136b1c004411759a291695c185fdfef
+      size: 17295
+    - path: data/metadata/psi_scores.csv
+      hash: md5
+      md5: 8ed8c46a26670789cf2e2c20c4f44343
+      size: 13271
+  feature_store_registration:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage 
+      feature_store_registration
+    deps:
+    - path: data/interim/train_cleaned.parquet
+      hash: md5
+      md5: 775e274d9f30f3827c6443a2258d1c23
+      size: 82573380
+    - path: data/metadata/column_groups.json
+      hash: md5
+      md5: 5f7676f6a58409dd90d87db00c9d992e
+      size: 7276
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/feature_store/
+      hash: md5
+      md5: 899415b0500eb23f36b15011cb615a7f.dir
+      size: 115067394
+      nfiles: 12
+  save_processed_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage save_processed_data
+    deps:
+    - path: data/interim/train_cleaned.parquet
+      hash: md5
+      md5: 775e274d9f30f3827c6443a2258d1c23
+      size: 82573380
+    - path: src/pipelines/run_data_pipeline.py
+      hash: md5
+      md5: 38ba33e1afbf56f49b9aa8853b89a89f
+      size: 14778
+    outs:
+    - path: data/metadata/leakage_report.md
+      hash: md5
+      md5: fd2be809059805b81002d478c2752493
+      size: 332
+    - path: data/processed/
+      hash: md5
+      md5: 3ded4ee53f46e89efffb4a4ae2e1d841.dir
+      size: 82573380
+      nfiles: 1
+  profile:
+    cmd: python3 -m src.pipelines.run_profiling
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/processed/
+      hash: md5
+      md5: 3ded4ee53f46e89efffb4a4ae2e1d841.dir
+      size: 82573380
+      nfiles: 1
+    - path: src/eda/profiling.py
+      hash: md5
+      md5: fedf34982f82923b70b522dec9bf3ca0
+      size: 39482
+    - path: src/pipelines/run_profiling.py
+      hash: md5
+      md5: 118b5c5fecb954c10ffcdeb2503c090d
+      size: 3533
+    outs:
+    - path: reports/eda/cardinality_report.csv
+      hash: md5
+      md5: 34edd9468a51f38b1fb690d03b11d156
+      size: 28837
+    - path: reports/eda/categorical_statistics.csv
+      hash: md5
+      md5: c7efa9506321fa8772719b6ba14ec3b9
+      size: 1903
+    - path: reports/eda/completeness_report.csv
+      hash: md5
+      md5: 3e8b33407fb8fb3775f4ef427a42afea
+      size: 16095
+    - path: reports/eda/dataset_profile.html
+      hash: md5
+      md5: 367dad59817612cbd3ea0789eb053e4c
+      size: 20365
+    - path: reports/eda/dataset_profile.json
+      hash: md5
+      md5: 745dc5d31694f4eb7e237167cabf2f91
+      size: 3461
+    - path: reports/eda/dataset_summary.md
+      hash: md5
+      md5: 936b3d498bab8c0fa8233a4f230b978d
+      size: 2070
+    - path: reports/eda/feature_dictionary.csv
+      hash: md5
+      md5: 2f385ac5f084a4d2e2387f6c0a1f8ec4
+      size: 55870
+    - path: reports/eda/memory_profile.csv
+      hash: md5
+      md5: 5931fece54ac6d8fb3f14f0818685ded
+      size: 22460
+    - path: reports/eda/numerical_statistics.csv
+      hash: md5
+      md5: 8cdb98a503e036a33e826e8f2ba10473
+      size: 54960

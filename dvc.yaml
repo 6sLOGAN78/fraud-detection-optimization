@@ -1,0 +1,222 @@
+stages:
+  load_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage load_data
+    deps:
+      - data/raw/train_transaction.csv
+      - data/raw/train_identity.csv
+      - data/raw/test_transaction.csv
+      - data/raw/test_identity.csv
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_transaction.parquet
+      - data/interim/train_identity.parquet
+      - data/interim/test_transaction.parquet
+      - data/interim/test_identity.parquet
+
+  validate_schema:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage validate_schema
+    deps:
+      - data/interim/train_transaction.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/metadata/schema.json
+
+  memory_optimization:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage memory_optimization
+    deps:
+      - data/interim/train_transaction.parquet
+      - data/interim/train_identity.parquet
+      - data/interim/test_transaction.parquet
+      - data/interim/test_identity.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_transaction_opt.parquet
+      - data/interim/train_identity_opt.parquet
+      - data/interim/test_transaction_opt.parquet
+      - data/interim/test_identity_opt.parquet
+      - data/metadata/memory_report_train.json
+
+  merge_identity:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage merge_identity
+    deps:
+      - data/interim/train_transaction_opt.parquet
+      - data/interim/train_identity_opt.parquet
+      - data/interim/test_transaction_opt.parquet
+      - data/interim/test_identity_opt.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+
+  quality_checks:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage quality_checks
+    deps:
+      - data/interim/train_merged.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_quality.parquet
+      - data/metadata/quality_report.json
+
+  missing_analysis:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage missing_analysis
+    deps:
+      - data/interim/train_quality.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_missing.parquet
+      - data/metadata/missing_report.csv
+
+  clean_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage clean_data
+    deps:
+      - data/interim/train_missing.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/interim/train_cleaned.parquet
+
+  metadata_generation:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage metadata_generation
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/metadata/feature_dictionary.json
+      - data/metadata/column_groups.json
+
+  drift_analysis:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage drift_analysis
+    deps:
+      - data/interim/train_cleaned.parquet
+      - data/interim/test_transaction_opt.parquet
+      - data/interim/test_identity_opt.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/metadata/drift_report.html
+      - data/metadata/psi_scores.csv
+      - data/metadata/ks_scores.csv
+
+  feature_store_registration:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage feature_store_registration
+    deps:
+      - data/interim/train_cleaned.parquet
+      - data/metadata/column_groups.json
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/feature_store/
+
+  save_processed_data:
+    cmd: python3 -m src.pipelines.run_data_pipeline --stage save_processed_data
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_data_pipeline.py
+    outs:
+      - data/processed/
+      - data/metadata/leakage_report.md
+
+  profile:
+    cmd: python3 -m src.pipelines.run_profiling
+    deps:
+      - data/processed/
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_profiling.py
+      - src/eda/profiling.py
+    outs:
+      - reports/eda/dataset_profile.html
+      - reports/eda/dataset_summary.md
+      - reports/eda/dataset_profile.json
+      - reports/eda/memory_profile.csv
+      - reports/eda/feature_dictionary.csv
+      - reports/eda/cardinality_report.csv
+      - reports/eda/numerical_statistics.csv
+      - reports/eda/categorical_statistics.csv
+      - reports/eda/completeness_report.csv
+
+  quality_assessment:
+    cmd: python3 -m src.pipelines.run_quality_assessment
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_quality_assessment.py
+      - src/eda/quality.py
+    outs:
+      - reports/eda/quality/data_quality_report.html
+      - reports/eda/quality/data_quality_summary.json
+      - reports/eda/quality/missing_summary.csv
+      - reports/eda/quality/duplicate_report.csv
+      - reports/eda/quality/constant_features.csv
+      - reports/eda/quality/near_constant_features.csv
+      - reports/eda/quality/invalid_values_report.csv
+      - reports/eda/quality/infinite_values_report.csv
+      - reports/eda/quality/outlier_summary.csv
+      - reports/eda/quality/consistency_report.json
+
+  missing_value_analysis:
+    cmd: python3 -m src.pipelines.run_missing_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_missing_analysis.py
+      - src/eda/missing.py
+    outs:
+      - reports/eda/missing/missing_percentage.csv
+      - reports/eda/missing/missing_summary.json
+      - reports/eda/missing/missing_heatmap.png
+      - reports/eda/missing/missing_correlation.csv
+      - reports/eda/missing/missing_correlation_heatmap.png
+      - reports/eda/missing/missing_vs_fraud.csv
+      - reports/eda/missing/missing_patterns.csv
+      - reports/eda/missing/feature_family_missing.csv
+      - reports/eda/missing/train_test_missing_comparison.csv
+      - reports/eda/missing/missing_recommendations.csv
+      - reports/eda/missing/row_missing_statistics.csv
+      - reports/eda/missing/missing_report.html
+
+  target_analysis:
+    cmd: python3 -m src.pipelines.run_target_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_target_analysis.py
+      - src/eda/target.py
+    outs:
+      - reports/eda/target/fraud_distribution.csv
+      - reports/eda/target/fraud_distribution.json
+      - reports/eda/target/class_imbalance_report.csv
+      - reports/eda/target/fraud_rate_summary.csv
+      - reports/eda/target/fraud_by_time.csv
+      - reports/eda/target/fraud_identity_analysis.csv
+      - reports/eda/target/fraud_amount_analysis.csv
+      - reports/eda/target/fraud_statistics.csv
+      - reports/eda/target/target_analysis_report.html
+      - reports/eda/target/target_analysis.json
+      - reports/eda/target/fraud_distribution_plot.png
+      - reports/eda/target/fraud_by_time_plot.png
+      - reports/eda/target/fraud_identity_plot.png
+      - reports/eda/target/fraud_amount_plot.png
+
+  numerical_analysis:
+    cmd: python3 -m src.pipelines.run_numerical_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_numerical_analysis.py
+      - src/eda/numerical.py
+    outs:
+      - reports/eda/numerical/numerical_features.csv
+      - reports/eda/numerical/numerical_feature_summary.json
+      - reports/eda/numerical/distribution_statistics.csv
+      - reports/eda/numerical/outlier_analysis.csv
+      - reports/eda/numerical/outlier_summary.json
+      - reports/eda/numerical/skewness_report.csv
+      - reports/eda/numerical/kurtosis_report.csv
+      - reports/eda/numerical/transformation_recommendations.csv
+      - reports/eda/numerical/numerical_analysis_report.html
+      - reports/eda/numerical/numerical_analysis.json
+      - reports/eda/numerical/kde_plots/
+      - reports/eda/numerical/histograms/
+      - reports/eda/numerical/boxplots/
+      - reports/eda/numerical/violin_plots/
+
+
+
+
