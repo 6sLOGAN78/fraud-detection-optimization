@@ -733,6 +733,20 @@ stages:
     outs:
       - reports/models/cv_report.html
 
+  threshold_optimization:
+    cmd: python3 -m src.pipelines.run_threshold_optimization
+    deps:
+      - data/feature_store_engineered/v1/train_selected_features.parquet
+      - data/feature_store_engineered/v1/test_selected_features.parquet
+      - data/feature_store_engineered/v1/feature_registry.json
+      - data/interim/train_merged.parquet
+      - data/models/v1/ensemble_model.pkl
+      - src/pipelines/run_threshold_optimization.py
+      - src/evaluation/thresholds.py
+    outs:
+      - reports/models/threshold_optimization_report.html
+
+
 
 
 
