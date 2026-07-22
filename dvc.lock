@@ -944,3 +944,88 @@ stages:
       hash: md5
       md5: 83e3beb186a0b14f15fe4dd5e3967911
       size: 1714
+  anonymous_analysis:
+    cmd: python3 -m src.pipelines.run_anonymous_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/anonymous.py
+      hash: md5
+      md5: 6f84a31a0435e118e205af1c9f98bf31
+      size: 43310
+    - path: src/pipelines/run_anonymous_analysis.py
+      hash: md5
+      md5: 9744cd96c0f37c182de5783b78cf9c3c
+      size: 2752
+    outs:
+    - path: reports/eda/anonymous/anonymous_analysis.json
+      hash: md5
+      md5: 03c4ebcc13ab7633ca051496ca31acab
+      size: 184
+    - path: reports/eda/anonymous/anonymous_analysis_report.html
+      hash: md5
+      md5: c35f16354ff432adbcd476d3685e276c
+      size: 34583
+    - path: reports/eda/anonymous/anonymous_correlation_analysis.csv
+      hash: md5
+      md5: 5b653711c84e38fb2b62fa6ef9ab470d
+      size: 15886
+    - path: reports/eda/anonymous/anonymous_distribution_analysis.csv
+      hash: md5
+      md5: ad1b5617d705ebfd1e04d95fc876a7e8
+      size: 10967
+    - path: reports/eda/anonymous/anonymous_feature_importance.csv
+      hash: md5
+      md5: 306478c26a9d580640361886d94eaaac
+      size: 16474
+    - path: reports/eda/anonymous/anonymous_feature_interactions.csv
+      hash: md5
+      md5: 625c173aeab910e65f758bede71af469
+      size: 310
+    - path: reports/eda/anonymous/anonymous_feature_inventory.csv
+      hash: md5
+      md5: ad41c3d77ede0ee96d40b3a72fc286d7
+      size: 15955
+    - path: reports/eda/anonymous/anonymous_feature_metadata.json
+      hash: md5
+      md5: e832659ebfd2e1c74f9a25f3717e7d03
+      size: 92
+    - path: reports/eda/anonymous/anonymous_feature_recommendations.csv
+      hash: md5
+      md5: b4e781df9e436f80be7a50088e4d3df3
+      size: 539
+    - path: reports/eda/anonymous/anonymous_missingness_analysis.csv
+      hash: md5
+      md5: f85df817a3a00f74f97c3f405d4e2428
+      size: 13976
+    - path: reports/eda/anonymous/c_feature_analysis.csv
+      hash: md5
+      md5: 2e5e9123d8f43229302e5d9644593483
+      size: 1420
+    - path: reports/eda/anonymous/d_feature_analysis.csv
+      hash: md5
+      md5: 49ecad81d7bb8c49fe7f9322280d9f74
+      size: 1527
+    - path: reports/eda/anonymous/feature_clusters.csv
+      hash: md5
+      md5: d92239323fd08ef4487241d27ca14909
+      size: 175
+    - path: reports/eda/anonymous/m_feature_analysis.csv
+      hash: md5
+      md5: 0a2ca533f8c9ccaecd1b4dbea14975c1
+      size: 377
+    - path: reports/eda/anonymous/plots/
+      hash: md5
+      md5: 6b6c2d41237ebc50f56a2cf26f3a8219.dir
+      size: 338296
+      nfiles: 4
+    - path: reports/eda/anonymous/v_feature_analysis.csv
+      hash: md5
+      md5: a3e61fa8de9f5022f9e520184eaeb06e
+      size: 32879

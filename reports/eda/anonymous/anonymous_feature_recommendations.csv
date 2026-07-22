@@ -1,0 +1,5 @@
+category,group,recommendation,rationale
+Distribution-Based,C-Series,Log1p Transformation,High right-skew/heavy tail behavior maps counts to logistic scale.
+Missingness Features,D-Series,Missing Indicator Flags,D features carry significant predictive value in their presence/absence patterns.
+Statistical Features,V-Series,PCA / Autoencoders,High dimensionality within V1-V339 requires projection to prevent overfitting.
+Interaction Features,C & M Series,Ratios & Products,Cross-interaction metrics capture velocity matching abnormalities.
