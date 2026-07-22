@@ -2205,3 +2205,39 @@ stages:
       hash: md5
       md5: d8a29978968841d9e944e2bbbc904785
       size: 4986
+  cv_evaluation:
+    cmd: python3 -m src.pipelines.run_cv_evaluation
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: data/models/v1/ensemble_model.pkl
+      hash: md5
+      md5: 6e8a4b5a88ed809e69d6a06f5beaa72b
+      size: 457449
+    - path: src/pipelines/run_cv_evaluation.py
+      hash: md5
+      md5: 2f2d35d4203d031fc38ac45fdca3ff83
+      size: 10865
+    - path: src/validation/cv.py
+      hash: md5
+      md5: b01d43e12c273211281b75b7bc592485
+      size: 1525
+    outs:
+    - path: reports/models/cv_report.html
+      hash: md5
+      md5: b30480703f98a7de04a24e4bbd170fac
+      size: 5157
