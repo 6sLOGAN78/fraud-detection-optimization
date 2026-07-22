@@ -16,9 +16,18 @@ logger = logging.getLogger(__name__)
 
 class NullSelector(BaseFeatureSelector):
     """Filters variables having missing/null ratios higher than the specified threshold."""
-    def __init__(self, threshold: float = 0.05) -> None:
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
         super().__init__("NullSelector")
         self.threshold = threshold
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
 
     def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> NullSelector:
         logger.info("Executing %s fit verification gate...", self.name)
@@ -38,9 +47,18 @@ class NullSelector(BaseFeatureSelector):
 
 class VarianceSelector(BaseFeatureSelector):
     """Filters low/zero variance continuous features below or equal to threshold."""
-    def __init__(self, threshold: float = 0.0) -> None:
+    def __init__(
+        self,
+        threshold: float = 0.0,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
         super().__init__("VarianceSelector")
         self.threshold = threshold
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
 
     def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> VarianceSelector:
         logger.info("Executing %s fit verification gate...", self.name)
@@ -68,9 +86,18 @@ class VarianceSelector(BaseFeatureSelector):
 
 class CorrelationSelector(BaseFeatureSelector):
     """Drops collinear feature pairs above correlation threshold, retaining higher variance features."""
-    def __init__(self, threshold: float = 0.95) -> None:
+    def __init__(
+        self,
+        threshold: float = 0.95,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
         super().__init__("CorrelationSelector")
         self.threshold = threshold
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
 
     def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> CorrelationSelector:
         logger.info("Executing %s fit verification gate...", self.name)
