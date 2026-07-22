@@ -2049,3 +2049,75 @@ stages:
       hash: md5
       md5: d29856998bf5cc99f70e573205c1d696
       size: 6612
+  xgboost_model:
+    cmd: python3 -m src.pipelines.run_xgboost_training
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/models/xgboost_model.py
+      hash: md5
+      md5: d825466d64a77a4dc0e594b4280c6caf
+      size: 2646
+    - path: src/pipelines/run_xgboost_training.py
+      hash: md5
+      md5: 140e4194f715493c2222f52f53d8b132
+      size: 10543
+    outs:
+    - path: data/models/v1/xgboost_model.pkl
+      hash: md5
+      md5: 957fc5dcb0c18cc6358ec811812c8474
+      size: 185269
+    - path: reports/models/xgboost_report.html
+      hash: md5
+      md5: f5173e265123aa1fcf030a852485b17f
+      size: 4975
+  lightgbm_model:
+    cmd: python3 -m src.pipelines.run_lightgbm_training
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/models/lightgbm_model.py
+      hash: md5
+      md5: 4a5dbbada613089521822ebe7bec01ab
+      size: 2680
+    - path: src/pipelines/run_lightgbm_training.py
+      hash: md5
+      md5: 7eda66a220be7dcd57cdd5a5a8e9f101
+      size: 10572
+    outs:
+    - path: data/models/v1/lightgbm_model.pkl
+      hash: md5
+      md5: 812e23a629367533d36da92dc1986a9a
+      size: 223007
+    - path: reports/models/lightgbm_report.html
+      hash: md5
+      md5: cedd482ac8353bedb19afea6766233fa
+      size: 4975
