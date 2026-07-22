@@ -563,6 +563,22 @@ stages:
       - data/feature_store_engineered/v1/interaction_pipeline_manifest.json
       - data/feature_store_engineered/v1/interaction_catalog.csv
 
+  feature_missing:
+    cmd: python3 -m src.pipelines.run_feature_missing
+    deps:
+      - data/feature_store_engineered/v1/train_interaction_features.parquet
+      - data/feature_store_engineered/v1/test_interaction_features.parquet
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_feature_missing.py
+      - src/feature_engineering/missing.py
+    outs:
+      - data/feature_store_engineered/v1/train_missing_features.parquet
+      - data/feature_store_engineered/v1/test_missing_features.parquet
+      - data/feature_store_engineered/v1/missing_pipeline_manifest.json
+      - data/feature_store_engineered/v1/missing_catalog.csv
+
+
 
 
 
