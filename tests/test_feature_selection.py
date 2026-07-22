@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 
@@ -141,6 +141,26 @@ def test_rfe_selector() -> None:
     
     assert "feat_pred" in transformed_rfe.columns
     assert "feat_noise" not in transformed_rfe.columns
+
+
+def test_sequential_selector() -> None:
+    # Set up mock dataframe with predictive feature and noise feature
+    rng = np.random.RandomState(42)
+    feat_pred = rng.normal(0, 1, 100)
+    y = pd.Series((feat_pred > 0.05).astype(int))
+    
+    # Predictor tracks y very well, noise is pure random
+    df = pd.DataFrame({
+        "feat_pred": feat_pred + y * 0.5,
+        "feat_noise": rng.normal(0, 10, 100),
+    })
+
+    # Test SequentialSelector (n_features_to_select=1 SFS correctly selects feat_pred)
+    sfs = SequentialSelector(n_features_to_select=1, random_state=42)
+    transformed_sfs = sfs.fit_transform(df, y)
+    
+    assert "feat_pred" in transformed_sfs.columns
+    assert "feat_noise" not in transformed_sfs.columns
 
 
 def test_selection_pipeline() -> None:

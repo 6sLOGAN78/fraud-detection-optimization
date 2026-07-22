@@ -611,5 +611,99 @@ class RFESelector(BaseFeatureSelector):
         return X[cols]
 
 
+class SequentialSelector(BaseFeatureSelector):
+    """Filters features using Sequential Feature Selection (greedy forward selection)."""
+    def __init__(
+        self,
+        n_features_to_select: int = 15,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("SequentialSelector")
+        self.n_features_to_select = n_features_to_select
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.selected_mask_: list[bool] = []
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> SequentialSelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for sequential selection. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Downsample to avoid extreme execution time blowups (SFS fits model repeatedly)
+        max_samples = 2000
+        if len(X) > max_samples:
+            logger.info("Downsampling %s training data to %d rows to avoid CPU explanation bottlenecks...", self.name, max_samples)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=max_samples, replace=False)
+            X_subset = X.loc[indices, numeric_cols]
+            y_subset = y.loc[indices]
+        else:
+            X_subset = X[numeric_cols]
+            y_subset = y
+
+        # Fill NaNs for classifier model
+        X_imputed = X_subset.fillna(0.0)
+
+        # Baseline model training
+        from sklearn.ensemble import RandomForestClassifier
+        model = RandomForestClassifier(
+            n_estimators=10,
+            max_depth=5,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+
+        from sklearn.feature_selection import SequentialFeatureSelector
+        # Determine number of features to select (never exceed number of available numeric cols)
+        select_k = min(self.n_features_to_select, len(numeric_cols))
+        
+        sfs = SequentialFeatureSelector(
+            estimator=model,
+            n_features_to_select=select_k,
+            direction="forward",
+            cv=3,
+            scoring="roc_auc",
+            n_jobs=self.n_jobs
+        )
+        sfs.fit(X_imputed, y_subset)
+
+        support = sfs.get_support()
+        self.selected_mask_ = list(support)
+
+        selected_numeric = []
+        dropped_numeric = []
+        for col, is_selected in zip(numeric_cols, support):
+            if is_selected:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
 
 
