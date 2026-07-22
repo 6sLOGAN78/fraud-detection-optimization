@@ -1929,3 +1929,47 @@ stages:
       hash: md5
       md5: 13530c1ff5e41e6c4fa1cce48bfc6955
       size: 2713
+  feature_selection:
+    cmd: python3 -m src.pipelines.run_feature_selection
+    deps:
+    - path: data/feature_store_engineered/v1/test_missing_features.parquet
+      hash: md5
+      md5: 7f717575a8c91807520fc457fa14a7b8
+      size: 22772730
+    - path: data/feature_store_engineered/v1/train_missing_features.parquet
+      hash: md5
+      md5: 01e67fac6b7c0038ffb1f804cf4d86d7
+      size: 29803200
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_selection/base.py
+      hash: md5
+      md5: 26508f05a6022ebd0bbf31e9e52d9a12
+      size: 1096
+    - path: src/feature_selection/pipeline.py
+      hash: md5
+      md5: 1b2a870e7e75774ba975a242a6465f4a
+      size: 3496
+    - path: src/feature_selection/selectors.py
+      hash: md5
+      md5: a210fdb2d1cc3e0756c124108dd24e24
+      size: 8313
+    - path: src/pipelines/run_feature_selection.py
+      hash: md5
+      md5: 03db0cd4d3b1fcee184ea676dd28ee46
+      size: 5332
+    outs:
+    - path: data/feature_store_engineered/v1/feature_selection_report.json
+      hash: md5
+      md5: 6fa1d43054ea3d9778c547e281533072
+      size: 17222
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: aefc6f3e6ece1504d3bc5e74087461ef
+      size: 4976362
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: d82dc2bd20f4827e448840be1dcdc84c
+      size: 5834231
