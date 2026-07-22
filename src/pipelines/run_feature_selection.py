@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -69,10 +69,12 @@ def main() -> None:
     boruta_sel = BorutaSelector(threshold=0.05, random_state=42)
     # 10. Simulated Annealing Filter (search for best subset)
     sa_sel = SimulatedAnnealingSelector(threshold=0.05, random_state=42)
-    # 11. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
+    # 11. Feature Stability Filter (drop highly unstable features across bootstraps, threshold=0.05)
+    stability_sel = FeatureStabilitySelector(threshold=0.05, random_state=42)
+    # 12. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
     imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
 
-    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, imp_sel])
+    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, stability_sel, imp_sel])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
@@ -134,6 +136,7 @@ def main() -> None:
             "sfs_features_to_select": 12,
             "boruta_threshold": 0.05,
             "simulated_annealing_threshold": 0.05,
+            "feature_stability_threshold": 0.05,
             "importance_threshold": 0.05,
             "initial_features_count": summary_report["total_initial_features"],
             "selected_features_count": summary_report["total_final_features"],

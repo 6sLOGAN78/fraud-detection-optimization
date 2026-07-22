@@ -966,6 +966,101 @@ class SimulatedAnnealingSelector(BaseFeatureSelector):
         return X[cols]
 
 
+class FeatureStabilitySelector(BaseFeatureSelector):
+    """Filters features by measuring stability coefficients of feature importances across bootstraps."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        n_bootstraps: int = 5,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("FeatureStabilitySelector")
+        self.threshold = threshold
+        self.n_bootstraps = n_bootstraps
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.stability_scores_: dict[str, float] = {}
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> FeatureStabilitySelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for bootstrap split fitting. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Baseline model training setup
+        from sklearn.ensemble import RandomForestClassifier
+        model = RandomForestClassifier(
+            n_estimators=10,
+            max_depth=5,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+
+        n_features = len(numeric_cols)
+        importances_list = []
+        
+        # Cross-bootstrap evaluation loop
+        rng = np.random.RandomState(self.random_state)
+        n_samples = len(X)
+        bootstrap_size = min(n_samples, 2000)
+        
+        for b in range(self.n_bootstraps):
+            # Bootstrap sampling (with replacement)
+            indices = rng.choice(X.index, size=bootstrap_size, replace=True)
+            X_b = X.loc[indices, numeric_cols].fillna(0.0)
+            y_b = y.loc[indices]
+
+            model.fit(X_b, y_b)
+            importances_list.append(model.feature_importances_)
+
+        # Convert to numpy array of shape (n_bootstraps, n_features)
+        importances_arr = np.nan_to_num(np.array(importances_list), nan=0.0)
+
+        # Calculate mean and standard deviation of feature importances
+        means = np.mean(importances_arr, axis=0)
+        stds = np.std(importances_arr, axis=0)
+
+        # Stability scorer: mean / (std + epsilon)
+        epsilon = 1e-5
+        stabilities = means / (stds + epsilon)
+
+        # Store in class scores dictionary
+        self.stability_scores_ = dict(zip(numeric_cols, stabilities))
+
+        selected_numeric = []
+        dropped_numeric = []
+        for col, score in self.stability_scores_.items():
+            if score >= self.threshold:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
 
 
 
