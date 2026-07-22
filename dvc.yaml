@@ -546,6 +546,24 @@ stages:
       - data/feature_store_engineered/v1/difference_pipeline_manifest.json
       - data/feature_store_engineered/v1/difference_catalog.csv
 
+  feature_interaction:
+    cmd: python3 -m src.pipelines.run_feature_interaction
+    deps:
+      - data/feature_store_engineered/v1/train_difference_features.parquet
+      - data/feature_store_engineered/v1/test_difference_features.parquet
+      - data/feature_store_engineered/v1/train_aggregated_features.parquet
+      - data/feature_store_engineered/v1/test_aggregated_features.parquet
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_feature_interaction.py
+      - src/feature_engineering/interactions.py
+    outs:
+      - data/feature_store_engineered/v1/train_interaction_features.parquet
+      - data/feature_store_engineered/v1/test_interaction_features.parquet
+      - data/feature_store_engineered/v1/interaction_pipeline_manifest.json
+      - data/feature_store_engineered/v1/interaction_catalog.csv
+
+
 
 
 

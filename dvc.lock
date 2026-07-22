@@ -1715,3 +1715,55 @@ stages:
       hash: md5
       md5: 2d2c5a091d5cb8467b26f6e1c2e611f3
       size: 57300294
+  feature_interaction:
+    cmd: python3 -m src.pipelines.run_feature_interaction
+    deps:
+    - path: data/feature_store_engineered/v1/test_aggregated_features.parquet
+      hash: md5
+      md5: 49152b1f9864353fdd6c93eefbbd5c8c
+      size: 31664604
+    - path: data/feature_store_engineered/v1/test_difference_features.parquet
+      hash: md5
+      md5: ebf06ce70a28d9a3f22b6b453e3a1ad6
+      size: 47379008
+    - path: data/feature_store_engineered/v1/train_aggregated_features.parquet
+      hash: md5
+      md5: fa56c3c27c20f2ce38995c6b44936b07
+      size: 37126535
+    - path: data/feature_store_engineered/v1/train_difference_features.parquet
+      hash: md5
+      md5: 2d2c5a091d5cb8467b26f6e1c2e611f3
+      size: 57300294
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_engineering/interactions.py
+      hash: md5
+      md5: 04a0b9c44aca40596e4d11ba500822a3
+      size: 6401
+    - path: src/pipelines/run_feature_interaction.py
+      hash: md5
+      md5: d18096a5507981bfd1b0e54314a569f9
+      size: 5657
+    outs:
+    - path: data/feature_store_engineered/v1/interaction_catalog.csv
+      hash: md5
+      md5: fefb181dc49b3e3264ff8ba2a0d27c08
+      size: 4784
+    - path: data/feature_store_engineered/v1/interaction_pipeline_manifest.json
+      hash: md5
+      md5: 091da1f304d975916d25cf0e46b36f35
+      size: 10973
+    - path: data/feature_store_engineered/v1/test_interaction_features.parquet
+      hash: md5
+      md5: 6883773eb92e9d272f3e8e76918f8b9f
+      size: 73726065
+    - path: data/feature_store_engineered/v1/train_interaction_features.parquet
+      hash: md5
+      md5: 96c883c6f0ed2d0ac604d98c407ceed7
+      size: 89660282
