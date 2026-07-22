@@ -1463,3 +1463,28 @@ stages:
       md5: d0f5f654ec099b5aeccd6adf2ecb6fbd.dir
       size: 5384
       nfiles: 2
+  feature_engineering:
+    cmd: python3 -m src.pipelines.run_feature_engineering
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_engineering/pipeline.py
+      hash: md5
+      md5: 8724553ce81c1ad991e9bf98239b8373
+      size: 9541
+    - path: src/pipelines/run_feature_engineering.py
+      hash: md5
+      md5: 5176f0ba3b949ad1aba8dbe3c3e4394c
+      size: 1566
+    outs:
+    - path: data/feature_store_engineered/
+      hash: md5
+      md5: ffbf50468410b9a966758868f10a6a4c.dir
+      size: 158649138
+      nfiles: 3

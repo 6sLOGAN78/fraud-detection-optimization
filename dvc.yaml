@@ -460,6 +460,17 @@ stages:
       - reports/mlflow/
       - reports/dvc/
 
+  feature_engineering:
+    cmd: python3 -m src.pipelines.run_feature_engineering
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_feature_engineering.py
+      - src/feature_engineering/pipeline.py
+    outs:
+      - data/feature_store_engineered/
+
+
 
 
 
