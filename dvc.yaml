@@ -704,6 +704,23 @@ stages:
       - data/models/v1/catboost_model.pkl
       - reports/models/catboost_report.html
 
+  ensemble_model:
+    cmd: python3 -m src.pipelines.run_ensemble_training
+    deps:
+      - data/feature_store_engineered/v1/train_selected_features.parquet
+      - data/feature_store_engineered/v1/test_selected_features.parquet
+      - data/feature_store_engineered/v1/feature_registry.json
+      - data/interim/train_merged.parquet
+      - data/models/v1/lightgbm_model.pkl
+      - data/models/v1/xgboost_model.pkl
+      - data/models/v1/catboost_model.pkl
+      - src/pipelines/run_ensemble_training.py
+      - src/models/ensemble.py
+    outs:
+      - data/models/v1/ensemble_model.pkl
+      - reports/models/ensemble_report.html
+
+
 
 
 
