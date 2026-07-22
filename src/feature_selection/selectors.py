@@ -815,6 +815,158 @@ class BorutaSelector(BaseFeatureSelector):
         return X[cols]
 
 
+class SimulatedAnnealingSelector(BaseFeatureSelector):
+    """Filters features using a Simulated Annealing metadata search optimizer."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        n_iterations: int = 15,
+        T0: float = 1.0,
+        alpha: float = 0.85,
+        feature_penalty: float = 0.01,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("SimulatedAnnealingSelector")
+        self.threshold = threshold
+        self.n_iterations = n_iterations
+        self.T0 = T0
+        self.alpha = alpha
+        self.feature_penalty = feature_penalty
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.SA_scores_: dict[str, float] = {}
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> SimulatedAnnealingSelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for energetic search. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Downsample to avoid extreme OOM and processing delays
+        max_samples = 2000
+        if len(X) > max_samples:
+            logger.info("Downsampling %s training data to %d rows to avoid CPU explanation bottlenecks...", self.name, max_samples)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=max_samples, replace=False)
+            X_subset = X.loc[indices, numeric_cols]
+            y_subset = y.loc[indices]
+        else:
+            X_subset = X[numeric_cols]
+            y_subset = y
+
+        # Fill NaNs for classifier model
+        X_imputed = X_subset.fillna(0.0)
+
+        # Baseline model training setup
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.model_selection import cross_val_score
+        
+        model = RandomForestClassifier(
+            n_estimators=10,
+            max_depth=5,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+
+        n_features = len(numeric_cols)
+        rng = np.random.RandomState(self.random_state)
+
+        # Initial random state mask
+        current_mask = rng.rand(n_features) > 0.5
+        # Ensure at least one feature is selected
+        if not np.any(current_mask):
+            current_mask[0] = True
+
+        def evaluate_mask(mask: np.ndarray) -> float:
+            selected_indices = np.where(mask)[0]
+            if len(selected_indices) == 0:
+                return 0.0
+            
+            selected_features = [numeric_cols[idx] for idx in selected_indices]
+            X_sel = X_imputed[selected_features]
+            
+            # 3-Fold CV ROC-AUC
+            scores = cross_val_score(model, X_sel, y_subset, cv=3, scoring="roc_auc", n_jobs=self.n_jobs)
+            mean_cv = float(np.mean(scores))
+            
+            # Apply feature penalty to favor smaller subsets
+            penalty = self.feature_penalty * (len(selected_indices) / n_features)
+            return mean_cv - penalty
+
+        current_energy = evaluate_mask(current_mask)
+        best_mask = current_mask.copy()
+        best_energy = current_energy
+
+        T = self.T0
+        
+        # Annealing Loop
+        for step in range(self.n_iterations):
+            # Generate neighbor: mutate (flip) 1 or 2 random positions
+            neighbor_mask = current_mask.copy()
+            flip_k = rng.choice([1, 2])
+            flip_indices = rng.choice(n_features, size=min(flip_k, n_features), replace=False)
+            for idx in flip_indices:
+                neighbor_mask[idx] = not neighbor_mask[idx]
+            
+            if not np.any(neighbor_mask):
+                neighbor_mask[rng.choice(n_features)] = True
+
+            neighbor_energy = evaluate_mask(neighbor_mask)
+
+            # Accept/Reject logic
+            if neighbor_energy > current_energy:
+                current_mask = neighbor_mask.copy()
+                current_energy = neighbor_energy
+                if neighbor_energy > best_energy:
+                    best_mask = neighbor_mask.copy()
+                    best_energy = neighbor_energy
+            else:
+                dE = current_energy - neighbor_energy
+                prob = np.exp(-dE / max(T, 1e-8))
+                if rng.rand() < prob:
+                    current_mask = neighbor_mask.copy()
+                    current_energy = neighbor_energy
+
+            # Cooling step
+            T *= self.alpha
+
+        # Score features in best_mask as 1.0, otherwise 0.0
+        selected_numeric = []
+        dropped_numeric = []
+        for i, col in enumerate(numeric_cols):
+            score = 1.0 if best_mask[i] else 0.0
+            self.SA_scores_[col] = score
+            if score >= self.threshold:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
 
 
 

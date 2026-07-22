@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -67,10 +67,12 @@ def main() -> None:
     sfs_sel = SequentialSelector(n_features_to_select=12, random_state=42)
     # 9. Boruta Filter (shadow feature threshold=0.05)
     boruta_sel = BorutaSelector(threshold=0.05, random_state=42)
-    # 10. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
+    # 10. Simulated Annealing Filter (search for best subset)
+    sa_sel = SimulatedAnnealingSelector(threshold=0.05, random_state=42)
+    # 11. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
     imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
 
-    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, imp_sel])
+    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, imp_sel])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
@@ -131,6 +133,7 @@ def main() -> None:
             "rfe_threshold": 0.05,
             "sfs_features_to_select": 12,
             "boruta_threshold": 0.05,
+            "simulated_annealing_threshold": 0.05,
             "importance_threshold": 0.05,
             "initial_features_count": summary_report["total_initial_features"],
             "selected_features_count": summary_report["total_final_features"],
