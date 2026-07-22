@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -55,10 +55,12 @@ def main() -> None:
     var_sel = VarianceSelector(threshold=0.0)
     # 3. Collinearity Filter (max 0.95 absolute correlation)
     corr_sel = CorrelationSelector(threshold=0.95)
-    # 4. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
+    # 4. Mutual Information Filter (max normalized MI threshold=0.05)
+    mi_sel = MutualInformationSelector(threshold=0.05, random_state=42)
+    # 5. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
     imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
 
-    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, imp_sel])
+    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, imp_sel])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
@@ -113,6 +115,7 @@ def main() -> None:
             "null_complete_threshold": 0.90,
             "variance_threshold": 0.0,
             "collinearity_threshold": 0.95,
+            "mutual_info_threshold": 0.05,
             "importance_threshold": 0.05,
             "initial_features_count": summary_report["total_initial_features"],
             "selected_features_count": summary_report["total_final_features"],
