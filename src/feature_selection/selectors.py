@@ -423,3 +423,104 @@ class SHAPSelector(BaseFeatureSelector):
         return X[cols]
 
 
+class PermutationImportanceSelector(BaseFeatureSelector):
+    """Filters features based on permutation feature importance values."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("PermutationImportanceSelector")
+        self.threshold = threshold
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.permutation_importances_: dict[str, float] = {}
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> PermutationImportanceSelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for permutation scoring. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Downsample to avoid slow execution paths
+        max_samples = 5000
+        if len(X) > max_samples:
+            logger.info("Downsampling %s training data to %d rows to avoid CPU explanation bottlenecks...", self.name, max_samples)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=max_samples, replace=False)
+            X_subset = X.loc[indices, numeric_cols]
+            y_subset = y.loc[indices]
+        else:
+            X_subset = X[numeric_cols]
+            y_subset = y
+
+        # Fill NaNs for classifier model
+        X_imputed = X_subset.fillna(0.0)
+
+        # Baseline model training
+        from sklearn.ensemble import RandomForestClassifier
+        model = RandomForestClassifier(
+            n_estimators=20,
+            max_depth=6,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+        model.fit(X_imputed, y_subset)
+
+        # Compute Permutation Importance
+        from sklearn.inspection import permutation_importance
+        result = permutation_importance(
+            model,
+            X_imputed,
+            y_subset,
+            scoring="roc_auc",
+            n_repeats=3,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+        
+        importances_mean = result.importances_mean
+
+        # Max-scale the scores to normalize between 0 and 1
+        max_val = float(np.max(importances_mean)) if len(importances_mean) > 0 else 1.0
+        if max_val <= 0.0:
+            max_val = 1.0
+
+        normalized_importances = importances_mean / max_val
+        feature_scores = dict(zip(numeric_cols, normalized_importances))
+        self.permutation_importances_ = feature_scores
+
+        selected_numeric = []
+        dropped_numeric = []
+        for col, val in feature_scores.items():
+            if val >= self.threshold:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
