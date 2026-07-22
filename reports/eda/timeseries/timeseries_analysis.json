@@ -1,0 +1,8 @@
+{
+  "total_transactions": 590540,
+  "days_covered": 181.9992,
+  "peak_risk_hour": 7,
+  "peak_risk_hour_fraud_rate_pct": 10.6102,
+  "temporal_anomalies_detected": 0,
+  "hourly_distribution_drift_psi": 0.0021
+}

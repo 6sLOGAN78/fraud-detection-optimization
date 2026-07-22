@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IEEE-CIS TIME SERIES DIAGNOSTICS</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #06070b;
+            --panel-bg: rgba(14, 16, 22, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-color: #8e97a4;
+            --text-white: #ffffff;
+            --accent-glow: #ffffff;
+            --alert-red: #ff3838;
+            --alert-green: #2ed573;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2.5rem;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Grid Overlay & Scanlines */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--text-white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .status-pill {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--alert-green);
+            background-color: rgba(46, 213, 115, 0.1);
+            color: var(--alert-green);
+            border-radius: 4px;
+            text-shadow: 0 0 5px rgba(46, 213, 115, 0.3);
+        }
+
+        /* Key Metrics Grid */
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hud-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px) saturate(120%);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .metric-val-red {
+            color: var(--alert-red);
+        }
+
+        /* Main Dashboard Sections */
+        .dashboard-body {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .visualizer-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .carousel-tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .carousel-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .carousel-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+        }
+
+        .carousel-tab.active {
+            background: #fff;
+            color: var(--bg-color);
+            border-color: #fff;
+            text-shadow: none;
+        }
+
+        .carousel-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        .carousel-img {
+            max-width: 100%;
+            max-height: 380px;
+            height: auto;
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hud-table-wrapper {
+            overflow-x: auto;
+            max-height: 480px;
+        }
+
+        .hud-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .hud-table th {
+            font-family: 'Orbitron', sans-serif;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hud-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .hud-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: #fff;
+        }
+
+        .secondary-panel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: var(--text-white);
+            margin-bottom: 1.25rem;
+            border-left: 3px solid var(--text-white);
+            padding-left: 0.75rem;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            margin-right: 0.25rem;
+        }
+
+        .tag-pill-high {
+            background-color: rgba(214, 48, 49, 0.15);
+            border-color: rgba(214, 48, 49, 0.3);
+            color: #ff7675;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>IEEE-CIS TIME SERIES DIAGNOSTICS</h1>
+            <p style="font-size: 0.65rem; color: var(--text-color); margin-top: 0.25rem; letter-spacing: 1px;">STAGE 3.10: SYSTEM TIME PROFILE</p>
+        </div>
+        <div class="status-pill">TIME ANALYZER OK</div>
+    </header>
+
+    <div class="hud-grid">
+        <div class="hud-panel">
+            <p class="metric-label">Total Transactions</p>
+            <p class="metric-value">590,540</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Timeline Coverage</p>
+            <p class="metric-value">181.9992 Days</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Hourly Drift (PSI)</p>
+            <p class="metric-value">0.0021</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Temporal Anomalies</p>
+            <p class="metric-value metric-val-red">0</p>
+        </div>
+    </div>
+
+    <div class="dashboard-body">
+        <div class="hud-panel visualizer-card">
+            <h2>DIAGNOSTIC VISUALIZATIONS</h2>
+            <div class="carousel-tabs">
+                <button class="carousel-tab active" onclick="switchTab(0)">Transaction Timeline</button>
+                <button class="carousel-tab" onclick="switchTab(1)">Hourly Distribution</button>
+                <button class="carousel-tab" onclick="switchTab(2)">Weekly Trend</button>
+                <button class="carousel-tab" onclick="switchTab(3)">Drift Analysis</button>
+            </div>
+            <div class="carousel-content">
+                <img id="carousel-img" class="carousel-img" src="plots/transaction_timeline.png" alt="Timeline Plot">
+            </div>
+        </div>
+
+        <div class="hud-panel">
+            <h2>HOURLY ANALYSIS SUMMARY</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>dt_hour</th>
+      <th>transaction_count</th>
+      <th>total_amount</th>
+      <th>fraud_count</th>
+      <th>percentage</th>
+      <th>average_amount</th>
+      <th>fraud_rate</th>
+      <th>relative_risk</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>37795</td>
+      <td>4.660496e+06</td>
+      <td>1186</td>
+      <td>6.4001</td>
+      <td>123.3099</td>
+      <td>3.1380</td>
+      <td>0.8968</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>32797</td>
+      <td>3.805385e+06</td>
+      <td>1027</td>
+      <td>5.5537</td>
+      <td>116.0284</td>
+      <td>3.1314</td>
+      <td>0.8949</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>26732</td>
+      <td>2.976132e+06</td>
+      <td>1002</td>
+      <td>4.5267</td>
+      <td>111.3322</td>
+      <td>3.7483</td>
+      <td>1.0712</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>20802</td>
+      <td>2.217529e+06</td>
+      <td>797</td>
+      <td>3.5225</td>
+      <td>106.6017</td>
+      <td>3.8314</td>
+      <td>1.0950</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>14839</td>
+      <td>1.527839e+06</td>
+      <td>770</td>
+      <td>2.5128</td>
+      <td>102.9610</td>
+      <td>5.1890</td>
+      <td>1.4830</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>9701</td>
+      <td>1.021160e+06</td>
+      <td>682</td>
+      <td>1.6427</td>
+      <td>105.2634</td>
+      <td>7.0302</td>
+      <td>2.0092</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>6007</td>
+      <td>6.350526e+05</td>
+      <td>467</td>
+      <td>1.0172</td>
+      <td>105.7188</td>
+      <td>7.7743</td>
+      <td>2.2219</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>3704</td>
+      <td>4.217263e+05</td>
+      <td>393</td>
+      <td>0.6272</td>
+      <td>113.8570</td>
+      <td>10.6102</td>
+      <td>3.0324</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>2591</td>
+      <td>3.250132e+05</td>
+      <td>241</td>
+      <td>0.4388</td>
+      <td>125.4393</td>
+      <td>9.3014</td>
+      <td>2.6583</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>2479</td>
+      <td>3.582568e+05</td>
+      <td>223</td>
+      <td>0.4198</td>
+      <td>144.5167</td>
+      <td>8.9956</td>
+      <td>2.5709</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>3627</td>
+      <td>4.803452e+05</td>
+      <td>193</td>
+      <td>0.6142</td>
+      <td>132.4360</td>
+      <td>5.3212</td>
+      <td>1.5208</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>6827</td>
+      <td>8.395777e+05</td>
+      <td>265</td>
+      <td>1.1561</td>
+      <td>122.9790</td>
+      <td>3.8816</td>
+      <td>1.1093</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>12451</td>
+      <td>1.632214e+06</td>
+      <td>379</td>
+      <td>2.1084</td>
+      <td>131.0910</td>
+      <td>3.0439</td>
+      <td>0.8699</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>20315</td>
+      <td>2.925522e+06</td>
+      <td>465</td>
+      <td>3.4401</td>
+      <td>144.0080</td>
+      <td>2.2889</td>
+      <td>0.6542</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>28328</td>
+      <td>4.138602e+06</td>
+      <td>686</td>
+      <td>4.7970</td>
+      <td>146.0958</td>
+      <td>2.4216</td>
+      <td>0.6921</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>33859</td>
+      <td>5.091228e+06</td>
+      <td>860</td>
+      <td>5.7336</td>
+      <td>150.3656</td>
+      <td>2.5399</td>
+      <td>0.7259</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>38698</td>
+      <td>5.631690e+06</td>
+      <td>1142</td>
+      <td>6.5530</td>
+      <td>145.5292</td>
+      <td>2.9511</td>
+      <td>0.8434</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>40723</td>
+      <td>6.150906e+06</td>
+      <td>1284</td>
+      <td>6.8959</td>
+      <td>151.0425</td>
+      <td>3.1530</td>
+      <td>0.9011</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td>41639</td>
+      <td>6.145356e+06</td>
+      <td>1467</td>
+      <td>7.0510</td>
+      <td>147.5866</td>
+      <td>3.5231</td>
+      <td>1.0069</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>42115</td>
+      <td>6.049589e+06</td>
+      <td>1463</td>
+      <td>7.1316</td>
+      <td>143.6445</td>
+      <td>3.4738</td>
+      <td>0.9928</td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td>41782</td>
+      <td>6.039937e+06</td>
+      <td>1432</td>
+      <td>7.0752</td>
+      <td>144.5584</td>
+      <td>3.4273</td>
+      <td>0.9795</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>41641</td>
+      <td>5.867886e+06</td>
+      <td>1416</td>
+      <td>7.0513</td>
+      <td>140.9161</td>
+      <td>3.4005</td>
+      <td>0.9718</td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td>41139</td>
+      <td>5.597750e+06</td>
+      <td>1345</td>
+      <td>6.9663</td>
+      <td>136.0692</td>
+      <td>3.2694</td>
+      <td>0.9344</td>
+    </tr>
+    <tr>
+      <td>23</td>
+      <td>39949</td>
+      <td>5.199755e+06</td>
+      <td>1478</td>
+      <td>6.7648</td>
+      <td>130.1598</td>
+      <td>3.6997</td>
+      <td>1.0574</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+    </div>
+
+    <div class="secondary-panel-grid">
+        <div class="hud-panel" style="grid-column: span 2;">
+            <h2>FEATURE ENGINEERING RECOMMENDATIONS</h2>
+            <table class="hud-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Feature Name</th>
+                        <th>Formula / Logic</th>
+                        <th>ML Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class='tag-pill tag-pill-high'>Basic Features</span></td><td><strong>dt_hour</strong></td><td><code>(TransactionDT // 3600) % 24</code></td><td>Extract diurnal behavior patterns.</td></tr><tr><td><span class='tag-pill tag-pill-high'>Basic Features</span></td><td><strong>dt_day_of_week</strong></td><td><code>(TransactionDT // 86400) % 7</code></td><td>Capture weekday vs weekend behavior changes.</td></tr><tr><td><span class='tag-pill tag-pill-high'>Basic Features</span></td><td><strong>is_night_transaction</strong></td><td><code>dt_hour in [23, 0, 1, 2, 3, 4, 5]</code></td><td>High-risk time bounds of abnormal user sessions.</td></tr><tr><td><span class='tag-pill tag-pill-high'>Cyclical Features</span></td><td><strong>dt_hour_sin / dt_hour_cos</strong></td><td><code>sin/cos(2 * pi * dt_hour / 24)</code></td><td>Maintain structural continuity across midnight transition (23h -> 0h).</td></tr><tr><td><span class='tag-pill tag-pill-high'>Rolling Features</span></td><td><strong>user_transactions_last_hour</strong></td><td><code>Rolling count using identity keys</code></td><td>Identify high-velocity card grooming attempts.</td></tr><tr><td><span class='tag-pill tag-pill-high'>Trend Features</span></td><td><strong>time_since_last_txn</strong></td><td><code>TransactionDT - prev_TransactionDT</code></td><td>Identify rapid sequential transaction surges.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="secondary-panel-grid">
+        <div class="hud-panel">
+            <h2>TRANSACTIONDT SUMMARY METRICS</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>metric</th>
+      <th>value</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Minimum TransactionDT</td>
+      <td>8.640000e+04</td>
+      <td>Start timestamp of the dataset (seconds)</td>
+    </tr>
+    <tr>
+      <td>Maximum TransactionDT</td>
+      <td>1.581113e+07</td>
+      <td>End timestamp of the dataset (seconds)</td>
+    </tr>
+    <tr>
+      <td>Time Span (Seconds)</td>
+      <td>1.572473e+07</td>
+      <td>Delta between maximum and minimum timestamps</td>
+    </tr>
+    <tr>
+      <td>Time Span (Days)</td>
+      <td>1.819992e+02</td>
+      <td>Delta converted to days</td>
+    </tr>
+    <tr>
+      <td>Transaction Density (per Day)</td>
+      <td>3.244740e+03</td>
+      <td>Average transaction throughput per day</td>
+    </tr>
+    <tr>
+      <td>Transaction Density (per Hour)</td>
+      <td>1.351975e+02</td>
+      <td>Average transaction throughput per hour</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        <div class="hud-panel">
+            <h2>TEMPORAL DRIFT ESTIMATIONS (TRAIN VS TEST)</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>hour</th>
+      <th>train_pct</th>
+      <th>test_pct</th>
+      <th>psi_contribution</th>
+      <th>jsd_contribution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>6.4001</td>
+      <td>6.0410</td>
+      <td>0.000207</td>
+      <td>0.000026</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>5.5537</td>
+      <td>5.2154</td>
+      <td>0.000213</td>
+      <td>0.000027</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>4.5267</td>
+      <td>4.3835</td>
+      <td>0.000046</td>
+      <td>0.000006</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>3.5225</td>
+      <td>3.4104</td>
+      <td>0.000036</td>
+      <td>0.000005</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>2.5128</td>
+      <td>2.4269</td>
+      <td>0.000030</td>
+      <td>0.000004</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>1.6427</td>
+      <td>1.5828</td>
+      <td>0.000022</td>
+      <td>0.000003</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>1.0172</td>
+      <td>0.9560</td>
+      <td>0.000038</td>
+      <td>0.000005</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>0.6272</td>
+      <td>0.5852</td>
+      <td>0.000029</td>
+      <td>0.000004</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0.4388</td>
+      <td>0.4448</td>
+      <td>0.000001</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>0.4198</td>
+      <td>0.4646</td>
+      <td>0.000045</td>
+      <td>0.000006</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>0.6142</td>
+      <td>0.6975</td>
+      <td>0.000106</td>
+      <td>0.000013</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>1.1561</td>
+      <td>1.2888</td>
+      <td>0.000144</td>
+      <td>0.000018</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>2.1084</td>
+      <td>2.3353</td>
+      <td>0.000232</td>
+      <td>0.000029</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>3.4401</td>
+      <td>3.8453</td>
+      <td>0.000451</td>
+      <td>0.000056</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>4.7970</td>
+      <td>5.1175</td>
+      <td>0.000207</td>
+      <td>0.000026</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+    </div>
+
+    <div class="secondary-panel-grid">
+        <div class="hud-panel" style="grid-column: span 2;">
+            <h2>DAILY ANOMALIES</h2>
+            <div class="hud-table-wrapper">
+                <div class='no-data'>NO COMPATIBLE DATA FOUND</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imagePaths = [
+            "plots/transaction_timeline.png",
+            "plots/hourly_distribution.png",
+            "plots/weekly_trend.png",
+            "plots/drift_analysis.png"
+        ];
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll(".carousel-tab");
+            const img = document.getElementById("carousel-img");
+            
+            tabs.forEach((tab, idx) => {
+                if (idx === index) {
+                    tab.classList.add("active");
+                } else {
+                    tab.classList.remove("active");
+                }
+            });
+
+            img.src = imagePaths[index];
+        }
+    </script>
+</body>
+</html>

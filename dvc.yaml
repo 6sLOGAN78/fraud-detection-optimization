@@ -284,3 +284,26 @@ stages:
       - reports/eda/identity/identity_analysis.json
       - reports/eda/identity/identity_analysis_report.html
       - reports/eda/identity/plots/
+  timeseries_analysis:
+    cmd: python3 -m src.pipelines.run_timeseries_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_timeseries_analysis.py
+      - src/eda/timeseries.py
+    outs:
+      - reports/eda/timeseries/transactiondt_analysis.csv
+      - reports/eda/timeseries/transactiondt_summary.json
+      - reports/eda/timeseries/hourly_analysis.csv
+      - reports/eda/timeseries/daily_analysis.csv
+      - reports/eda/timeseries/weekly_analysis.csv
+      - reports/eda/timeseries/monthly_analysis.csv
+      - reports/eda/timeseries/fraud_trend_analysis.csv
+      - reports/eda/timeseries/seasonality_analysis.csv
+      - reports/eda/timeseries/temporal_drift_analysis.csv
+      - reports/eda/timeseries/temporal_drift_report.json
+      - reports/eda/timeseries/temporal_anomalies.csv
+      - reports/eda/timeseries/time_feature_recommendations.csv
+      - reports/eda/timeseries/timeseries_analysis.json
+      - reports/eda/timeseries/timeseries_analysis_report.html
+      - reports/eda/timeseries/plots/

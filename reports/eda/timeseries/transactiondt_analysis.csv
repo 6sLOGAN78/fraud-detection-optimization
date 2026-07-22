@@ -1,0 +1,7 @@
+metric,value,description
+Minimum TransactionDT,86400.0,Start timestamp of the dataset (seconds)
+Maximum TransactionDT,15811131.0,End timestamp of the dataset (seconds)
+Time Span (Seconds),15724731.0,Delta between maximum and minimum timestamps
+Time Span (Days),181.9992,Delta converted to days
+Transaction Density (per Day),3244.7395,Average transaction throughput per day
+Transaction Density (per Hour),135.1975,Average transaction throughput per hour

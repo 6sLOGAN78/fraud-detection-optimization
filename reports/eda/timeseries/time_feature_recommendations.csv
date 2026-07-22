@@ -1,0 +1,7 @@
+category,feature,formula_description,rationale
+Basic Features,dt_hour,(TransactionDT // 3600) % 24,Extract diurnal behavior patterns.
+Basic Features,dt_day_of_week,(TransactionDT // 86400) % 7,Capture weekday vs weekend behavior changes.
+Basic Features,is_night_transaction,"dt_hour in [23, 0, 1, 2, 3, 4, 5]",High-risk time bounds of abnormal user sessions.
+Cyclical Features,dt_hour_sin / dt_hour_cos,sin/cos(2 * pi * dt_hour / 24),Maintain structural continuity across midnight transition (23h -> 0h).
+Rolling Features,user_transactions_last_hour,Rolling count using identity keys,Identify high-velocity card grooming attempts.
+Trend Features,time_since_last_txn,TransactionDT - prev_TransactionDT,Identify rapid sequential transaction surges.

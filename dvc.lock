@@ -863,3 +863,84 @@ stages:
       md5: 799ac16486c1f818bfc55406248cc082.dir
       size: 83445
       nfiles: 4
+  timeseries_analysis:
+    cmd: python3 -m src.pipelines.run_timeseries_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/timeseries.py
+      hash: md5
+      md5: a192ddbe35ce1d95e1e83e2ac27555af
+      size: 41191
+    - path: src/pipelines/run_timeseries_analysis.py
+      hash: md5
+      md5: 6679e6882f965e7abe7cf16739b3ecd1
+      size: 1832
+    outs:
+    - path: reports/eda/timeseries/daily_analysis.csv
+      hash: md5
+      md5: 711e134f5e39f94fedeb2273766843e9
+      size: 9423
+    - path: reports/eda/timeseries/fraud_trend_analysis.csv
+      hash: md5
+      md5: 096a290bb65aed6718432b6f3cf2bae4
+      size: 12496
+    - path: reports/eda/timeseries/hourly_analysis.csv
+      hash: md5
+      md5: 3111f44902dd1844f098c8f642f15b23
+      size: 1352
+    - path: reports/eda/timeseries/monthly_analysis.csv
+      hash: md5
+      md5: bb7cd6353bec4e6c4403ef58ff988c9c
+      size: 479
+    - path: reports/eda/timeseries/plots/
+      hash: md5
+      md5: 325dd1b9eb030d4117a0200296a0dd5b.dir
+      size: 148326
+      nfiles: 4
+    - path: reports/eda/timeseries/seasonality_analysis.csv
+      hash: md5
+      md5: 75c9053a0b2941e4b1ff39511cea5d3b
+      size: 1138
+    - path: reports/eda/timeseries/temporal_anomalies.csv
+      hash: md5
+      md5: 9023f9bacdbb8b7b805b3baee4eba60b
+      size: 11911
+    - path: reports/eda/timeseries/temporal_drift_analysis.csv
+      hash: md5
+      md5: deed97d19edaa486c32cef84240241d5
+      size: 791
+    - path: reports/eda/timeseries/temporal_drift_report.json
+      hash: md5
+      md5: 7b077a26d90299f070b76e6ed5f47e98
+      size: 79
+    - path: reports/eda/timeseries/time_feature_recommendations.csv
+      hash: md5
+      md5: 299b3ff6e7514f02bf14afbbc9c56f46
+      size: 747
+    - path: reports/eda/timeseries/timeseries_analysis.json
+      hash: md5
+      md5: 6358bd8d8d199835598ef46f3f475cc3
+      size: 208
+    - path: reports/eda/timeseries/timeseries_analysis_report.html
+      hash: md5
+      md5: de32f238f94eb3be6ac68e2b28d6e3c5
+      size: 21161
+    - path: reports/eda/timeseries/transactiondt_analysis.csv
+      hash: md5
+      md5: b6f70f7460e98195a4ad8921862ecb26
+      size: 453
+    - path: reports/eda/timeseries/transactiondt_summary.json
+      hash: md5
+      md5: 0eb091509c1018e39d2ef6ebb6a4243d
+      size: 166
+    - path: reports/eda/timeseries/weekly_analysis.csv
+      hash: md5
+      md5: 83e3beb186a0b14f15fe4dd5e3967911
+      size: 1714
