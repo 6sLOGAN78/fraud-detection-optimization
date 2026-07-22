@@ -221,7 +221,7 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
-    split_idx = int(len(X) * 0.8)
+    split_idx = int(len(X) * (1.0 - config.training.val_ratio))
     X_val = X.iloc[split_idx:]
     y_val = y.iloc[split_idx:]
     
@@ -240,7 +240,7 @@ def main() -> None:
         with open(Path(p), "rb") as f:
             models[name] = pickle.load(f)
             
-    comparator = ModelComparator()
+    comparator = ModelComparator(log_level=config.logging.level if hasattr(config, "logging") else "INFO")
     results = comparator.compare(models, X_val, y_val)
     
     selector = CandidateModelSelector(optimize_metric="f2_score")

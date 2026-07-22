@@ -224,10 +224,13 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+
     # Downsample matrix to prevent OOM
-    if len(X) > 50000:
-        rng = np.random.RandomState(42)
-        indices = rng.choice(X.index, size=50000, replace=False)
+    if len(X) > config.training.max_samples:
+        rng = np.random.RandomState(config.seed)
+        indices = rng.choice(X.index, size=config.training.max_samples, replace=False)
         X_sub = X.loc[indices].reset_index(drop=True)
         y_sub = y.loc[indices].reset_index(drop=True)
     else:
@@ -235,7 +238,7 @@ def main() -> None:
         y_sub = y
         
     logger.info("Executing TimeSeriesSplit Cross Validation...")
-    validator = TimeSeriesCrossValidator(n_splits=5)
+    validator = TimeSeriesCrossValidator(n_splits=config.cv_folds)
     folds = validator.split(X_sub, y_sub)
     
     # Load EnsembleClassifier

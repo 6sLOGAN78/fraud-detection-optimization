@@ -626,6 +626,7 @@ stages:
   feature_selection:
     cmd: python3 -m src.pipelines.run_feature_selection
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_missing_features.parquet
       - data/feature_store_engineered/v1/test_missing_features.parquet
       - data/interim/train_merged.parquet
@@ -641,6 +642,7 @@ stages:
   model_development:
     cmd: python3 -m src.pipelines.run_model_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -654,6 +656,7 @@ stages:
   baseline_models:
     cmd: python3 -m src.pipelines.run_baseline_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -668,6 +671,7 @@ stages:
   lightgbm_model:
     cmd: python3 -m src.pipelines.run_lightgbm_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -681,6 +685,7 @@ stages:
   xgboost_model:
     cmd: python3 -m src.pipelines.run_xgboost_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -694,6 +699,7 @@ stages:
   catboost_model:
     cmd: python3 -m src.pipelines.run_catboost_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -707,6 +713,7 @@ stages:
   ensemble_model:
     cmd: python3 -m src.pipelines.run_ensemble_training
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -723,6 +730,7 @@ stages:
   cv_evaluation:
     cmd: python3 -m src.pipelines.run_cv_evaluation
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -736,6 +744,7 @@ stages:
   threshold_optimization:
     cmd: python3 -m src.pipelines.run_threshold_optimization
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -749,6 +758,7 @@ stages:
   probability_calibration:
     cmd: python3 -m src.pipelines.run_probability_calibration
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -762,6 +772,7 @@ stages:
   model_comparison:
     cmd: python3 -m src.pipelines.run_model_comparison
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json
@@ -780,6 +791,7 @@ stages:
   candidate_selection:
     cmd: python3 -m src.pipelines.run_candidate_selection
     deps:
+      - configs/config.yaml
       - data/feature_store_engineered/v1/train_selected_features.parquet
       - data/feature_store_engineered/v1/test_selected_features.parquet
       - data/feature_store_engineered/v1/feature_registry.json

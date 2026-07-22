@@ -1,0 +1,26 @@
+{
+    "timestamp": "2026-07-22T21:13:54.863354",
+    "online_store": {
+        "db_path": "data/feature_store_foundation/online.db",
+        "size_bytes": 44969984
+    },
+    "offline_store": {
+        "base_dir": "data/feature_store_foundation/offline",
+        "size_bytes": 7921606
+    },
+    "monitored_views": [
+        {
+            "view_name": "missingness_train_features",
+            "features_count": 2,
+            "avg_serving_latency_ms": 0.005998010019538924,
+            "primary_feature_psi_drift": 0.0
+        },
+        {
+            "view_name": "missingness_test_features",
+            "features_count": 2,
+            "avg_serving_latency_ms": 0.0056570000015199184,
+            "primary_feature_psi_drift": 1.0488643228921366
+        }
+    ],
+    "status": "PASS"
+}

@@ -35,6 +35,20 @@ class MLflowConfig:
 
 
 @dataclass(frozen=True)
+class EDAConfig:
+    """Config entity for Exploratory Data Analysis limits."""
+    sample_size: int
+
+
+@dataclass(frozen=True)
+class TrainingConfig:
+    """Config entity for model training and downsampling parameters."""
+    max_samples: int
+    val_ratio: float
+    decision_threshold: float
+
+
+@dataclass(frozen=True)
 class PathsConfig:
     """Config entity for folders paths."""
     raw_dir: str
@@ -67,6 +81,8 @@ class ProjectConfig:
     mlflow: MLflowConfig
     paths: PathsConfig
     model_params: ModelParamsConfig
+    eda: EDAConfig
+    training: TrainingConfig
 
 
 class ConfigurationManager:
@@ -107,6 +123,8 @@ class ConfigurationManager:
                 pass
         
         if not server_alive:
+            import os
+            os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
             tracking_uri = "file:./mlruns"
             
         mlflow_cfg = MLflowConfig(
@@ -134,6 +152,16 @@ class ConfigurationManager:
             catboost=dict(OmegaConf.to_container(cfg.model.params, resolve=True)) if "model" in cfg and "params" in cfg.model else {},
         )
         
+        eda_cfg = EDAConfig(
+            sample_size=int(cfg.eda.sample_size) if "eda" in cfg and "sample_size" in cfg.eda else 50000
+        )
+        
+        training_cfg = TrainingConfig(
+            max_samples=int(cfg.training.max_samples) if "training" in cfg and "max_samples" in cfg.training else 50000,
+            val_ratio=float(cfg.training.val_ratio) if "training" in cfg and "val_ratio" in cfg.training else 0.2,
+            decision_threshold=float(cfg.training.decision_threshold) if "training" in cfg and "decision_threshold" in cfg.training else 0.05
+        )
+        
         return ProjectConfig(
             project_name=cfg.project_name,
             seed=cfg.seed,
@@ -142,5 +170,7 @@ class ConfigurationManager:
             data=data_cfg,
             mlflow=mlflow_cfg,
             paths=paths_cfg,
-            model_params=model_params
+            model_params=model_params,
+            eda=eda_cfg,
+            training=training_cfg
         )

@@ -278,15 +278,18 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+
     # Data Preparation Spec: time-based train/validation split (e.g. 80/20)
-    split_idx = int(len(X) * 0.8)
+    split_idx = int(len(X) * (1.0 - config.training.val_ratio))
     X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
     y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
     
     # Fast train limits to prevent OOM
-    if len(X_train) > 50000:
-        rng = np.random.RandomState(42)
-        fit_idx = rng.choice(X_train.index, size=50000, replace=False)
+    if len(X_train) > config.training.max_samples:
+        rng = np.random.RandomState(config.seed)
+        fit_idx = rng.choice(X_train.index, size=config.training.max_samples, replace=False)
         X_train_fit = X_train.loc[fit_idx]
         y_train_fit = y_train.loc[fit_idx]
     else:
@@ -295,7 +298,11 @@ def main() -> None:
         
     # 4. Train Logistic Regression Baseline
     logger.info("Training Logistic Regression baseline...")
-    lr_baseline = LogisticRegressionBaseline(threshold=0.05, random_state=42, n_jobs=-1)
+    lr_baseline = LogisticRegressionBaseline(
+        threshold=config.training.decision_threshold, 
+        random_state=config.seed, 
+        n_jobs=-1
+    )
     lr_baseline.fit(X_train_fit, y_train_fit)
     
     # Predict and evaluate
@@ -318,7 +325,11 @@ def main() -> None:
     
     # 5. Train XGBoost Baseline
     logger.info("Training XGBoost baseline...")
-    xgb_baseline = XGBoostBaseline(threshold=0.05, random_state=42, n_jobs=-1)
+    xgb_baseline = XGBoostBaseline(
+        threshold=config.training.decision_threshold, 
+        random_state=config.seed, 
+        n_jobs=-1
+    )
     xgb_baseline.fit(X_train_fit, y_train_fit)
     
     xgb_train_pred = xgb_baseline.predict_proba(X_train_fit)[:, 1]

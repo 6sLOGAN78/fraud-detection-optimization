@@ -1,1 +1,11 @@
 /model_development_report.html
+/baseline_models_report.html
+/xgboost_report.html
+/lightgbm_report.html
+/catboost_report.html
+/ensemble_report.html
+/cv_report.html
+/threshold_optimization_report.html
+/probability_calibration_report.html
+/model_comparison_report.html
+/candidate_selection_report.html

@@ -210,7 +210,7 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
-    split_idx = int(len(X) * 0.8)
+    split_idx = int(len(X) * (1.0 - config.training.val_ratio))
     X_val = X.iloc[split_idx:]
     y_val = y.iloc[split_idx:]
     

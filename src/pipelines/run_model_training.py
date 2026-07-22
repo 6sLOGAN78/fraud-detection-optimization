@@ -270,11 +270,14 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
-    # Limit to 50k samples for fast training runs & zero OOM
-    if len(X) > 50000:
-        logger.info("Sampling 50,000 samples for development fit...")
-        rng = np.random.RandomState(42)
-        fit_idx = rng.choice(X.index, size=50000, replace=False)
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+
+    # Limit to max_samples for fast training runs & zero OOM
+    if len(X) > config.training.max_samples:
+        logger.info("Sampling %d samples for development fit...", config.training.max_samples)
+        rng = np.random.RandomState(config.seed)
+        fit_idx = rng.choice(X.index, size=config.training.max_samples, replace=False)
         X_fit = X.loc[fit_idx]
         y_fit = y.loc[fit_idx]
     else:
@@ -282,8 +285,13 @@ def main() -> None:
         y_fit = y
         
     # 4. Fit Pipeline
-    pipeline = ModelDevelopmentPipeline(threshold=0.05, random_state=42, n_jobs=-1, log_level="INFO")
-    summary = pipeline.fit_and_validate(X_fit, y_fit, val_ratio=0.2)
+    pipeline = ModelDevelopmentPipeline(
+        threshold=config.training.decision_threshold, 
+        random_state=config.seed, 
+        n_jobs=-1, 
+        log_level="INFO"
+    )
+    summary = pipeline.fit_and_validate(X_fit, y_fit, val_ratio=config.training.val_ratio)
     
     # Save output artifacts
     output_dir = Path("data/models/v1")

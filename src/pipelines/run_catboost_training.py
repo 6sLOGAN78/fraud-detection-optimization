@@ -218,14 +218,17 @@ def main() -> None:
     X = df_merged[selected_cols]
     y = df_merged["isFraud"]
     
-    split_idx = int(len(X) * 0.8)
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+
+    split_idx = int(len(X) * (1.0 - config.training.val_ratio))
     X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
     y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
     
     # Downsample train set dynamically to prevent OOM
-    if len(X_train) > 50000:
-        rng = np.random.RandomState(42)
-        fit_idx = rng.choice(X_train.index, size=50000, replace=False)
+    if len(X_train) > config.training.max_samples:
+        rng = np.random.RandomState(config.seed)
+        fit_idx = rng.choice(X_train.index, size=config.training.max_samples, replace=False)
         X_train_fit = X_train.loc[fit_idx]
         y_train_fit = y_train.loc[fit_idx]
     else:
@@ -233,7 +236,11 @@ def main() -> None:
         y_train_fit = y_train
         
     logger.info("Training CatBoost Classifier...")
-    model = CatBoostClassifierWrapper(threshold=0.05, random_state=42, n_jobs=-1)
+    model = CatBoostClassifierWrapper(
+        threshold=config.training.decision_threshold, 
+        random_state=config.seed, 
+        n_jobs=-1
+    )
     model.fit(X_train_fit, y_train_fit)
     
     train_pred = model.predict_proba(X_train_fit)[:, 1]

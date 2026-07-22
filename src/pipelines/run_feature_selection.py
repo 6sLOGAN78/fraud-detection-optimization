@@ -50,43 +50,50 @@ def main() -> None:
     features_to_select = [c for c in df_train.columns if c != "TransactionID"]
 
     logger.info("Building Feature Selection Pipeline stages...")
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+
     # 1. Information Completeness Filter (max 90% null rate)
-    null_sel = NullSelector(threshold=0.90)
+    null_sel = NullSelector(threshold=config.data.missing_threshold)
     # 2. Zero Variance Filter
     var_sel = VarianceSelector(threshold=0.0)
     # 3. Collinearity Filter (max 0.95 absolute correlation)
-    corr_sel = CorrelationSelector(threshold=0.95)
+    corr_sel = CorrelationSelector(
+        threshold=config.data.correlation_threshold, 
+        random_state=config.seed,
+        max_samples=config.training.max_samples
+    )
     # 4. Mutual Information Filter (max normalized MI threshold=0.05)
-    mi_sel = MutualInformationSelector(threshold=0.05, random_state=42)
+    mi_sel = MutualInformationSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 5. SHAP attribution Filter (max normalized SHAP score threshold=0.05)
-    shap_sel = SHAPSelector(threshold=0.05, random_state=42)
+    shap_sel = SHAPSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 6. Permutation Importance Filter (max normalized Permutation score threshold=0.05)
-    perm_sel = PermutationImportanceSelector(threshold=0.05, random_state=42)
+    perm_sel = PermutationImportanceSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 7. Recursive Feature Elimination Filter (top recursive features threshold=0.05)
-    rfe_sel = RFESelector(threshold=0.05, random_state=42)
+    rfe_sel = RFESelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 8. Sequential Feature Selection Filter (greedy forward selection, select 12 features)
-    sfs_sel = SequentialSelector(n_features_to_select=12, random_state=42)
+    sfs_sel = SequentialSelector(n_features_to_select=12, random_state=config.seed)
     # 9. Boruta Filter (shadow feature threshold=0.05)
-    boruta_sel = BorutaSelector(threshold=0.05, random_state=42)
+    boruta_sel = BorutaSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 10. Simulated Annealing Filter (search for best subset)
-    sa_sel = SimulatedAnnealingSelector(threshold=0.05, random_state=42)
+    sa_sel = SimulatedAnnealingSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 11. Feature Stability Filter (drop highly unstable features across bootstraps, threshold=0.05)
-    stability_sel = FeatureStabilitySelector(threshold=0.05, random_state=42)
+    stability_sel = FeatureStabilitySelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 12. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
-    imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
+    imp_sel = ImportanceSelector(threshold=config.data.selection_threshold, random_state=config.seed)
     # 13. Quality Validation Gate
-    validation_gate = FeatureSelectionValidator(random_state=42)
+    validation_gate = FeatureSelectionValidator(random_state=config.seed)
 
     pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, stability_sel, imp_sel, validation_gate])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
     
-    # Downsample to 100,000 samples for selector fitting to avoid system OOM
-    if len(df_train_features) > 100000:
-        logger.info("Downsampling training data to 100,000 samples for pipeline fit...")
-        rng = np.random.RandomState(42)
-        fit_indices = rng.choice(df_train_features.index, size=100000, replace=False)
+    max_fit_samples = config.training.max_samples * 2  # Feature selection fits on up to 2x train target size
+    if len(df_train_features) > max_fit_samples:
+        logger.info("Downsampling training data to %d samples for pipeline fit...", max_fit_samples)
+        rng = np.random.RandomState(config.seed)
+        fit_indices = rng.choice(df_train_features.index, size=max_fit_samples, replace=False)
         df_fit_features = df_train_features.loc[fit_indices]
         y_fit = y_train.loc[fit_indices]
     else:

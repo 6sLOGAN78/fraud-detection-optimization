@@ -91,13 +91,15 @@ class CorrelationSelector(BaseFeatureSelector):
         threshold: float = 0.95,
         random_state: int = 42,
         n_jobs: int = -1,
-        log_level: str = "INFO"
+        log_level: str = "INFO",
+        max_samples: int = 50000
     ) -> None:
         super().__init__("CorrelationSelector")
         self.threshold = threshold
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.log_level = log_level
+        self.max_samples = max_samples
 
     def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> CorrelationSelector:
         logger.info("Executing %s fit verification gate...", self.name)
@@ -109,9 +111,9 @@ class CorrelationSelector(BaseFeatureSelector):
             return self
 
         # Downsample to avoid OOM or high CPU bottlenecks during large correlation calculations
-        if len(X) > 50000:
+        if len(X) > self.max_samples:
             rng = np.random.RandomState(self.random_state)
-            indices = rng.choice(X.index, size=50000, replace=False)
+            indices = rng.choice(X.index, size=self.max_samples, replace=False)
             X_sub = X.loc[indices, numeric_cols]
         else:
             X_sub = X[numeric_cols]
