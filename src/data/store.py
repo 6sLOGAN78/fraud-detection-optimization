@@ -1,4 +1,4 @@
-"""Enterprise Feature Store foundation module providing Offline, Online, Registry, Catalog, APIs, and versioning interfaces."""
+"""Enterprise Feature Store foundation module providing Offline, Online, Registry, Catalog, APIs, versioning, lineage, and Security RBAC gates."""
 
 from __future__ import annotations
 
@@ -18,14 +18,50 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+class FeatureLineage(BaseModel):
+    """Lineage tracking of engineered features mapping upstream dependencies and transformation properties."""
+    source_dataset: str
+    pipeline_stage: str
+    transformation_type: str = "vectorized"
+    description: str = ""
+
+
 class FeatureViewMetadata(BaseModel):
-    """Metadata detailing schema definitions and configurations of a Feature View."""
+    """Metadata detailing schema definitions, governance tags, and lineage links of a Feature View."""
     name: str
     entity_id: str
     features: list[str]
     source_path: str
     version: str = "v1"
     created_at: str = Field(default_factory=lambda: pd.Timestamp.now().isoformat())
+    owner: str = "MLOps Team"
+    tags: list[str] = Field(default_factory=list)
+    description: str = ""
+    lineage: FeatureLineage | None = None
+
+
+class AccessController:
+    """Security Access Control (RBAC) validator for token-based permission gating."""
+    ROLES = {"ADMIN", "READ_WRITE", "READ_ONLY"}
+    
+    def __init__(self, admin_token: str = "ADMIN_TOKEN_999", read_write_token: str = "RW_TOKEN_888", read_only_token: str = "RO_TOKEN_777") -> None:
+        self._tokens = {
+            admin_token: "ADMIN",
+            read_write_token: "READ_WRITE",
+            read_only_token: "READ_ONLY",
+        }
+
+    def authenticate_token(self, token: str | None) -> str:
+        if not token or token not in self._tokens:
+            raise PermissionError("Access Denied: Invalid or missing API security token.")
+        return self._tokens[token]
+
+    def authorize(self, token: str | None, required_roles: list[str]) -> None:
+        role = self.authenticate_token(token)
+        if role == "ADMIN":
+            return
+        if role not in required_roles:
+            raise PermissionError(f"Access Denied: Role '{role}' lacks permission. Required: {required_roles}")
 
 
 class FeatureRegistry:
@@ -233,12 +269,13 @@ class OnlineStore:
 
 
 class FeatureStoreClient:
-    """Unified client orchestrator bridging all offline/online registries and ingestion APIs."""
+    """Unified client orchestrator bridging all offline/online registries, lineage logs, and RBAC token gates."""
     def __init__(self, registry_path: Path, offline_dir: Path, online_db: Path) -> None:
         self.registry = FeatureRegistry(registry_path)
         self.offline_store = OfflineStore(offline_dir)
         self.online_store = OnlineStore(online_db)
         self.catalog = FeatureCatalog(self.registry)
+        self.access_controller = AccessController()
 
     def register_feature_view(
         self,
@@ -247,19 +284,33 @@ class FeatureStoreClient:
         features: list[str],
         source_path: str,
         version: str = "v1",
+        owner: str = "MLOps Team",
+        tags: list[str] = [],
+        description: str = "",
+        lineage: FeatureLineage | None = None,
+        token: str | None = None,
     ) -> FeatureViewMetadata:
+        """Registers a Feature View config - restricted to ADMIN or READ_WRITE roles."""
+        self.access_controller.authorize(token, ["ADMIN", "READ_WRITE"])
+        
         meta = FeatureViewMetadata(
             name=name,
             entity_id=entity_id,
             features=features,
             source_path=source_path,
             version=version,
+            owner=owner,
+            tags=tags,
+            description=description,
+            lineage=lineage,
         )
         self.registry.register_view(meta)
         return meta
 
-    def ingest(self, view_name: str, df: pd.DataFrame) -> None:
-        """Ingests a feature dataframe to both offline parquet and online key-value tables."""
+    def ingest(self, view_name: str, df: pd.DataFrame, token: str | None = None) -> None:
+        """Ingests a feature dataframe to both offline parquet and online key-value tables - restricted to ADMIN or READ_WRITE."""
+        self.access_controller.authorize(token, ["ADMIN", "READ_WRITE"])
+        
         view_meta = self.registry.get_view(view_name)
         if not view_meta:
             raise ValueError(f"Feature view '{view_name}' is not registered. Register it first!")
@@ -289,7 +340,10 @@ class FeatureStoreClient:
         entity_df: pd.DataFrame,
         feature_views: list[tuple[str, str]],
         entity_id: str = "TransactionID",
+        token: str | None = None,
     ) -> pd.DataFrame:
+        """Retrieves points-in-time offline batch logs - readable by ADMIN, READ_WRITE, or READ_ONLY."""
+        self.access_controller.authorize(token, ["ADMIN", "READ_WRITE", "READ_ONLY"])
         return self.offline_store.get_historical_features(entity_df, feature_views, entity_id=entity_id)
 
     def get_online_features(
@@ -298,5 +352,8 @@ class FeatureStoreClient:
         view_name: str,
         feature_names: list[str],
         entity_id: str = "TransactionID",
+        token: str | None = None,
     ) -> list[dict[str, Any]]:
+        """Retrieves real-time online features - readable by ADMIN, READ_WRITE, or READ_ONLY."""
+        self.access_controller.authorize(token, ["ADMIN", "READ_WRITE", "READ_ONLY"])
         return self.online_store.get_online_features(entity_keys, view_name, feature_names, entity_id=entity_id)

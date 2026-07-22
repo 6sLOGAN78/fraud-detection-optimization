@@ -1,4 +1,4 @@
-"""Pipeline orchestration script to ingest engineered features into Offline and Online feature stores, and log metadata to MLflow."""
+"""Pipeline orchestration script to ingest engineered features into Offline and Online feature stores with governance, lineage metadata, and SECURITY RBAC tokens."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.data.store import FeatureStoreClient
+from src.data.store import FeatureStoreClient, FeatureLineage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ def main() -> None:
         logger.error(msg)
         raise FileNotFoundError(msg)
 
-    logger.info("Dependency verification passed. Initializing Feature Store Client...")
+    logger.info("Dependency verification passed. Initializing Feature Store Client with Security tokens...")
 
     # Paths for registry, offline base, and online db
     store_dir = Path("data/feature_store_foundation")
@@ -43,23 +43,46 @@ def main() -> None:
     offline_dir = store_dir / "offline"
     online_db = store_dir / "online.db"
 
+    # Client uses default config tokens
     client = FeatureStoreClient(registry_path, offline_dir, online_db)
+    
+    # We will use ADMIN_TOKEN_999 for ingestion/registration
+    admin_token = "ADMIN_TOKEN_999"
 
     # Load datasets
     df_train = pd.read_parquet(train_miss_in)
     df_test = pd.read_parquet(test_miss_in)
 
     # 1. Define Features to Register & Ingest
-    # We will register "missing_ratio" and "completeness_score"
     features_to_register = ["missing_ratio", "completeness_score"]
 
-    logger.info("Registering train and test feature views...")
+    logger.info("Constructing lineage structures...")
+    train_lineage = FeatureLineage(
+        source_dataset=str(train_miss_in),
+        pipeline_stage="feature_missing",
+        transformation_type="vectorized-missingness",
+        description="Missingness ratio and completeness markers on transaction fields",
+    )
+    
+    test_lineage = FeatureLineage(
+        source_dataset=str(test_miss_in),
+        pipeline_stage="feature_missing",
+        transformation_type="vectorized-missingness",
+        description="Missingness ratio and completeness markers on transaction fields",
+    )
+
+    logger.info("Registering train and test feature views with lineage and tags...")
     client.register_feature_view(
         name="missingness_train_features",
         entity_id="TransactionID",
         features=features_to_register,
         source_path=str(train_miss_in),
         version="v1",
+        owner="Fraud Core Team",
+        tags=["missingness", "train", "quality_metrics"],
+        description="Train indicators for missing column ratios",
+        lineage=train_lineage,
+        token=admin_token,
     )
     
     client.register_feature_view(
@@ -68,31 +91,37 @@ def main() -> None:
         features=features_to_register,
         source_path=str(test_miss_in),
         version="v1",
+        owner="Fraud Core Team",
+        tags=["missingness", "test", "quality_metrics"],
+        description="Test indicators for missing column ratios Verification",
+        lineage=test_lineage,
+        token=admin_token,
     )
 
     # Ingest train and test features into offline snappy and online SQLite
-    logger.info("Ingesting train features into Unified Feature Store...")
-    client.ingest("missingness_train_features", df_train)
+    logger.info("Ingesting train features with RBAC validation gate...")
+    client.ingest("missingness_train_features", df_train, token=admin_token)
 
-    logger.info("Ingesting test features into Unified Feature Store...")
-    client.ingest("missingness_test_features", df_test)
+    logger.info("Ingesting test features with RBAC validation gate...")
+    client.ingest("missingness_test_features", df_test, token=admin_token)
 
     # MLflow tracking instrumentation
-    logger.info("Logging feature store ingestion metadata to MLflow...")
+    logger.info("Logging feature store ingestion and lineage metadata to MLflow...")
     active = mlflow.active_run()
     started = False
     if active is None:
-        mlflow.start_run(run_name="feature_store_foundation")
+        mlflow.start_run(run_name="feature_store_operations")
         started = True
 
     try:
+        catalog_views = client.catalog.list_views()
         mlflow.log_params({
-            "pipeline_stage": "feature_store_foundation",
+            "pipeline_stage": "feature_store_operations",
             "offline_store_dir": str(offline_dir),
             "online_store_database": str(online_db),
-            "registered_views_count": len(client.catalog.list_views()),
-            "ingested_train_rows": len(df_train),
-            "ingested_test_rows": len(df_test),
+            "registered_views_count": len(catalog_views),
+            "owner": "Fraud Core Team",
+            "tags": ", ".join(catalog_views[0].get("tags", [])),
         })
     except Exception as e:
         logger.warning("MLflow tracking logging encountered warning: %s", e)
@@ -100,7 +129,7 @@ def main() -> None:
         if started:
             mlflow.end_run()
 
-    logger.info("Feature Store Foundation Ingestion Pipeline completed successfully.")
+    logger.info("Feature Store Operations pipeline completed successfully.")
 
 
 if __name__ == "__main__":

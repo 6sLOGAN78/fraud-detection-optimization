@@ -1852,12 +1852,12 @@ stages:
       size: 29803200
     - path: src/data/store.py
       hash: md5
-      md5: e995ae318f157d836c0f33beb15b00ff
-      size: 11996
+      md5: 5806b5c8770c9793e5d1206118d02252
+      size: 14593
     - path: src/pipelines/run_feature_store.py
       hash: md5
-      md5: 4543fa2186521ba3d66b5ea6a39547b6
-      size: 3589
+      md5: b4d3c2b8c5ddfafdf273b00b63986953
+      size: 4877
     outs:
     - path: 
         data/feature_store_foundation/offline/missingness_test_features/v1/features.parquet
@@ -1875,5 +1875,5 @@ stages:
       size: 44969984
     - path: data/feature_store_foundation/registry.json
       hash: md5
-      md5: 577489a5e32267e1fc51dbf5763b20d7
-      size: 775
+      md5: 75e3df56f1181c71f2414125f2e1cab9
+      size: 1875
