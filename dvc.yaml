@@ -378,3 +378,26 @@ stages:
       - reports/eda/interaction/interaction_analysis_report.html
       - reports/eda/interaction/plots/
 
+  statistical_tests:
+    cmd: python3 -m src.pipelines.run_statistical_tests
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_statistical_tests.py
+      - src/eda/statistical_tests.py
+    outs:
+      - reports/eda/statistical_tests/statistical_feature_inventory.csv
+      - reports/eda/statistical_tests/statistical_metadata.json
+      - reports/eda/statistical_tests/ks_results.csv
+      - reports/eda/statistical_tests/chi_square_results.csv
+      - reports/eda/statistical_tests/mann_whitney_results.csv
+      - reports/eda/statistical_tests/anova_results.csv
+      - reports/eda/statistical_tests/mutual_information_results.csv
+      - reports/eda/statistical_tests/multiple_testing_correction.csv
+      - reports/eda/statistical_tests/effect_size_analysis.csv
+      - reports/eda/statistical_tests/statistical_significance_ranking.csv
+      - reports/eda/statistical_tests/statistical_feature_recommendations.csv
+      - reports/eda/statistical_tests/statistical_tests_report.html
+      - reports/eda/statistical_tests/plots/
+
+

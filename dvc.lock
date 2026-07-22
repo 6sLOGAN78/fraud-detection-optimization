@@ -1187,3 +1187,77 @@ stages:
       hash: md5
       md5: 6d7f519b85ab0df4d1ee87faaf5e6c58
       size: 172
+  statistical_tests:
+    cmd: python3 -m src.pipelines.run_statistical_tests
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/statistical_tests.py
+      hash: md5
+      md5: 1eb3a25a456da96ed3f8b9d593276e7c
+      size: 40978
+    - path: src/pipelines/run_statistical_tests.py
+      hash: md5
+      md5: 20cdcb4b4b134d8f08f8c3e04242a2ea
+      size: 2029
+    outs:
+    - path: reports/eda/statistical_tests/anova_results.csv
+      hash: md5
+      md5: c5f0931435448afe7b0c44cc90d1940f
+      size: 455
+    - path: reports/eda/statistical_tests/chi_square_results.csv
+      hash: md5
+      md5: 04367eca9727ce9aa6967727b8642a72
+      size: 383
+    - path: reports/eda/statistical_tests/effect_size_analysis.csv
+      hash: md5
+      md5: 7de3d562de5207a12d511ad0b963a6b9
+      size: 555
+    - path: reports/eda/statistical_tests/ks_results.csv
+      hash: md5
+      md5: 505721cde0d50ed4bfba8e7f5a0050ec
+      size: 720
+    - path: reports/eda/statistical_tests/mann_whitney_results.csv
+      hash: md5
+      md5: b5d5d5bc0a0255b702f3ed47202496d2
+      size: 705
+    - path: reports/eda/statistical_tests/multiple_testing_correction.csv
+      hash: md5
+      md5: 55c64bbb64a5544aef83eae26aaa7c06
+      size: 1466
+    - path: reports/eda/statistical_tests/mutual_information_results.csv
+      hash: md5
+      md5: e9aa898ccf17a1203dc64769417fdb70
+      size: 743
+    - path: reports/eda/statistical_tests/plots/
+      hash: md5
+      md5: 4aa1b21ef63dbe1432ff5a7d65cf76aa.dir
+      size: 36103
+      nfiles: 2
+    - path: reports/eda/statistical_tests/statistical_feature_inventory.csv
+      hash: md5
+      md5: d8084a33e84fa16365915464c589fdbe
+      size: 1812
+    - path: 
+        reports/eda/statistical_tests/statistical_feature_recommendations.csv
+      hash: md5
+      md5: e71dd6ba1018521e55d652e92499e194
+      size: 2476
+    - path: reports/eda/statistical_tests/statistical_metadata.json
+      hash: md5
+      md5: 85a3cab4898916eee45c44b520ab8583
+      size: 153
+    - path: reports/eda/statistical_tests/statistical_significance_ranking.csv
+      hash: md5
+      md5: e0aea0cb7f28a670d4d1db2a2e2a618c
+      size: 1881
+    - path: reports/eda/statistical_tests/statistical_tests_report.html
+      hash: md5
+      md5: f0567603d0cf61c49036487a6929b6c5
+      size: 22411
