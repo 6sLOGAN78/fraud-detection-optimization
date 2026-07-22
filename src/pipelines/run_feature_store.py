@@ -1,7 +1,8 @@
-"""Pipeline orchestration script to ingest engineered features into Offline and Online feature stores with governance, lineage metadata, and SECURITY RBAC tokens."""
+"""Pipeline orchestration script to ingest engineered features into Offline and Online feature stores with governance, security, and OPERATIONS monitoring/observability."""
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -33,7 +34,7 @@ def main() -> None:
         logger.error(msg)
         raise FileNotFoundError(msg)
 
-    logger.info("Dependency verification passed. Initializing Feature Store Client with Security tokens...")
+    logger.info("Dependency verification passed. Initializing Feature Store Client...")
 
     # Paths for registry, offline base, and online db
     store_dir = Path("data/feature_store_foundation")
@@ -71,7 +72,7 @@ def main() -> None:
         description="Missingness ratio and completeness markers on transaction fields",
     )
 
-    logger.info("Registering train and test feature views with lineage and tags...")
+    logger.info("Registering train and test feature views...")
     client.register_feature_view(
         name="missingness_train_features",
         entity_id="TransactionID",
@@ -105,31 +106,49 @@ def main() -> None:
     logger.info("Ingesting test features with RBAC validation gate...")
     client.ingest("missingness_test_features", df_test, token=admin_token)
 
+    # 2. Run Operations Monitoring & Observability Checks
+    logger.info("Running Feature Store Observability Benchmark...")
+    test_keys = df_test["TransactionID"].head(100).tolist()
+    report = client.monitor.get_monitoring_report(client, test_keys)
+    
+    # Save monitoring report JSON
+    report_path = store_dir / "monitoring_report.json"
+    with open(report_path, "w") as f:
+        json.dump(report, f, indent=4)
+    logger.info("Feature Store Operations Monitoring Report saved to: %s", report_path)
+
     # MLflow tracking instrumentation
-    logger.info("Logging feature store ingestion and lineage metadata to MLflow...")
+    logger.info("Logging feature store ingestion statistics and latencies to MLflow...")
     active = mlflow.active_run()
     started = False
     if active is None:
-        mlflow.start_run(run_name="feature_store_operations")
+        mlflow.start_run(run_name="feature_store_observability")
         started = True
 
     try:
         catalog_views = client.catalog.list_views()
+        
+        # Log active monitor values
         mlflow.log_params({
-            "pipeline_stage": "feature_store_operations",
-            "offline_store_dir": str(offline_dir),
-            "online_store_database": str(online_db),
-            "registered_views_count": len(catalog_views),
-            "owner": "Fraud Core Team",
-            "tags": ", ".join(catalog_views[0].get("tags", [])),
+            "pipeline_stage": "feature_store_observability",
+            "online_store_size_bytes": report["online_store"]["size_bytes"],
+            "offline_store_size_bytes": report["offline_store"]["size_bytes"],
+            "registered_views": len(catalog_views),
         })
+        
+        for view_stat in report.get("monitored_views", []):
+            name = view_stat["view_name"]
+            mlflow.log_metrics({
+                f"{name}_avg_serving_latency_ms": view_stat["avg_serving_latency_ms"],
+                f"{name}_primary_psi_drift": view_stat["primary_feature_psi_drift"],
+            })
     except Exception as e:
         logger.warning("MLflow tracking logging encountered warning: %s", e)
     finally:
         if started:
             mlflow.end_run()
 
-    logger.info("Feature Store Operations pipeline completed successfully.")
+    logger.info("Feature Store Operations monitoring pipeline completed successfully.")
 
 
 if __name__ == "__main__":

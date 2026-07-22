@@ -1,4 +1,4 @@
-"""Enterprise Feature Store foundation module providing Offline, Online, Registry, Catalog, APIs, versioning, lineage, and Security RBAC gates."""
+"""Enterprise Feature Store foundation module providing Offline, Online, Registry, Catalog, APIs, versioning, lineage, Security RBAC gates, and active Monitoring & Observability."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import sqlite3
+import time
 from pathlib import Path
 from typing import Any
 
@@ -268,14 +269,128 @@ class OnlineStore:
         return results
 
 
+class FeatureStoreMonitor:
+    """Feature Store Operations Monitor evaluating storage footprints, access latency, and distribution shifts."""
+    def __init__(self, offline_dir: Path, db_path: Path) -> None:
+        self.offline_dir = Path(offline_dir)
+        self.db_path = Path(db_path)
+
+    def measure_online_latency(self, online_store: OnlineStore, view_name: str, test_keys: list[int | str], features: list[str]) -> float:
+        """Measures SQLite key-value retrieval times to ensure optimal serving efficiency (< 2ms)."""
+        if not test_keys:
+            return 0.0
+            
+        t0 = time.perf_counter()
+        _ = online_store.get_online_features(test_keys, view_name, features)
+        t_elapsed = time.perf_counter() - t0
+        latency_ms = (t_elapsed / len(test_keys)) * 1000
+        return float(latency_ms)
+
+    def calculate_psi(self, baseline: pd.Series, target: pd.Series, bins: int = 10) -> float:
+        """Computes Population Stability Index (PSI) to track feature distribution drift."""
+        base_clean = baseline.dropna()
+        tgt_clean = target.dropna()
+        if base_clean.empty or tgt_clean.empty:
+            return 0.0
+            
+        try:
+            percentiles = np.linspace(0, 100, bins + 1)
+            cuts = np.percentile(base_clean, percentiles)
+            cuts = np.unique(cuts)
+            if len(cuts) < 2:
+                return 0.0
+        except Exception:
+            return 0.0
+            
+        baseline_counts, _ = np.histogram(base_clean, bins=cuts)
+        target_counts, _ = np.histogram(tgt_clean, bins=cuts)
+        
+        # Normalize
+        P = baseline_counts / len(base_clean)
+        Q = target_counts / len(tgt_clean)
+        
+        eps = 1e-4
+        P = np.where(P == 0.0, eps, P)
+        Q = np.where(Q == 0.0, eps, Q)
+        
+        P /= P.sum()
+        Q /= Q.sum()
+        
+        # Calculate PSI
+        psi_val = np.sum((P - Q) * np.log(P / Q))
+        return float(psi_val)
+
+    def get_monitoring_report(self, client: FeatureStoreClient, test_keys: list[int | str]) -> dict[str, Any]:
+        """Generates comprehensive JSON report tracking sizes, latencies, schema tags, and feature drifts."""
+        # 1. Database sizes
+        online_size = self.db_path.stat().st_size if self.db_path.exists() else 0
+        
+        offline_size = 0
+        if self.offline_dir.exists():
+            for root, _, files in os.walk(self.offline_dir):
+                for f in files:
+                    offline_size += (Path(root) / f).stat().st_size
+                    
+        # 2. Performance benchmark & drifts
+        monitored_views = []
+        catalog_views = client.catalog.list_views()
+        
+        # Measure latency specifically on transaction keys if any views are registered
+        for view in catalog_views:
+            view_name = view["name"]
+            features = view["features"]
+            
+            latency = self.measure_online_latency(client.online_store, view_name, test_keys, features)
+            
+            # Simple check for drift if matching train vs test views exist
+            drift_score = 0.0
+            if "test" in view_name:
+                train_view_name = view_name.replace("test", "train")
+                train_view = client.registry.get_view(train_view_name)
+                if train_view:
+                    # Load a small slice of Parquet from both
+                    try:
+                        f_train_path = self.offline_dir / train_view_name / train_view.version / "features.parquet"
+                        f_test_path = self.offline_dir / view_name / view["version"] / "features.parquet"
+                        if f_train_path.exists() and f_test_path.exists():
+                            df_tr = pd.read_parquet(f_train_path, columns=[features[0]]).head(1000)
+                            df_te = pd.read_parquet(f_test_path, columns=[features[0]]).head(1000)
+                            drift_score = self.calculate_psi(df_tr[features[0]], df_te[features[0]])
+                    except Exception as e:
+                        logger.warning("Could not calculate PSI drift for %s: %s", view_name, e)
+                        
+            monitored_views.append({
+                "view_name": view_name,
+                "features_count": len(features),
+                "avg_serving_latency_ms": latency,
+                "primary_feature_psi_drift": drift_score,
+            })
+            
+        report = {
+            "timestamp": pd.Timestamp.now().isoformat(),
+            "online_store": {
+                "db_path": str(self.db_path),
+                "size_bytes": online_size,
+            },
+            "offline_store": {
+                "base_dir": str(self.offline_dir),
+                "size_bytes": offline_size,
+            },
+            "monitored_views": monitored_views,
+            "status": "PASS" if all(v["avg_serving_latency_ms"] < 2.0 for v in monitored_views) else "WARN",
+        }
+        return report
+
+
 class FeatureStoreClient:
-    """Unified client orchestrator bridging all offline/online registries, lineage logs, and RBAC token gates."""
+    """Unified client orchestrator bridging all offline/online registries, lineage logs, RBAC token gates, and operations monitors."""
     def __init__(self, registry_path: Path, offline_dir: Path, online_db: Path) -> None:
         self.registry = FeatureRegistry(registry_path)
         self.offline_store = OfflineStore(offline_dir)
         self.online_store = OnlineStore(online_db)
         self.catalog = FeatureCatalog(self.registry)
         self.access_controller = AccessController()
+        self.monitor = FeatureStoreMonitor(offline_dir, online_db)
 
     def register_feature_view(
         self,
