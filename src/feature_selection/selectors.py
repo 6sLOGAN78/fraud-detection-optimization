@@ -309,3 +309,117 @@ class MutualInformationSelector(BaseFeatureSelector):
         cols = [c for c in X.columns if c in self.selected_features_]
         return X[cols]
 
+
+class SHAPSelector(BaseFeatureSelector):
+    """Filters features based on mean absolute SHAP values calculated from a baseline model."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("SHAPSelector")
+        self.threshold = threshold
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.shap_importances_: dict[str, float] = {}
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> SHAPSelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for computing SHAP contributions. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Downsample to avoid memory and performance OOM/stalls during tree explaining
+        max_samples = 5000
+        if len(X) > max_samples:
+            logger.info("Downsampling %s training data to %d rows to avoid CPU explaining execution bottlenecks...", self.name, max_samples)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=max_samples, replace=False)
+            X_subset = X.loc[indices, numeric_cols]
+            y_subset = y.loc[indices]
+        else:
+            X_subset = X[numeric_cols]
+            y_subset = y
+
+        # Fill NaNs for classifier model
+        X_imputed = X_subset.fillna(0.0)
+
+        # Baseline model training
+        from sklearn.ensemble import RandomForestClassifier
+        model = RandomForestClassifier(
+            n_estimators=20,
+            max_depth=6,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+        model.fit(X_imputed, y_subset)
+
+        # Compute SHAP values
+        import shap
+        explainer = shap.TreeExplainer(model)
+        shap_vals = explainer.shap_values(X_imputed)
+
+        # Handle list and 3D array return structure for classification / multi-class models
+        if isinstance(shap_vals, list):
+            if len(shap_vals) > 1:
+                shap_vals = shap_vals[1]
+            else:
+                shap_vals = shap_vals[0]
+        elif isinstance(shap_vals, np.ndarray):
+            if shap_vals.ndim == 3:
+                # Shape could be (n_samples, n_features, n_classes) or (n_samples, n_classes, n_features)
+                if shap_vals.shape[1] == X_imputed.shape[1]:
+                    if shap_vals.shape[2] > 1:
+                        shap_vals = shap_vals[..., 1]
+                    else:
+                        shap_vals = shap_vals[..., 0]
+                elif shap_vals.shape[2] == X_imputed.shape[1]:
+                    if shap_vals.shape[1] > 1:
+                        shap_vals = shap_vals[:, 1, :]
+                    else:
+                        shap_vals = shap_vals[:, 0, :]
+
+        mean_abs_shap = np.mean(np.abs(shap_vals), axis=0)
+
+        # Normalize relative to the maximum mean absolute SHAP value
+        max_val = float(np.max(mean_abs_shap)) if len(mean_abs_shap) > 0 else 1.0
+        if max_val == 0.0:
+            max_val = 1.0
+
+        normalized_shap = mean_abs_shap / max_val
+        feature_scores = dict(zip(numeric_cols, normalized_shap))
+        self.shap_importances_ = feature_scores
+
+        selected_numeric = []
+        dropped_numeric = []
+        for col, val in feature_scores.items():
+            if val >= self.threshold:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
