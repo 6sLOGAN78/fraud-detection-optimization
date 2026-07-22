@@ -1663,3 +1663,55 @@ stages:
       hash: md5
       md5: 1aacb77cc66521f46809d782bb866705
       size: 61549074
+  feature_difference:
+    cmd: python3 -m src.pipelines.run_feature_difference
+    deps:
+    - path: data/feature_store_engineered/v1/test_aggregated_features.parquet
+      hash: md5
+      md5: 49152b1f9864353fdd6c93eefbbd5c8c
+      size: 31664604
+    - path: data/feature_store_engineered/v1/test_ratio_features.parquet
+      hash: md5
+      md5: dbc9fd2bb94cd50b642c7a409b715817
+      size: 50353422
+    - path: data/feature_store_engineered/v1/train_aggregated_features.parquet
+      hash: md5
+      md5: fa56c3c27c20f2ce38995c6b44936b07
+      size: 37126535
+    - path: data/feature_store_engineered/v1/train_ratio_features.parquet
+      hash: md5
+      md5: 1aacb77cc66521f46809d782bb866705
+      size: 61549074
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_engineering/differences.py
+      hash: md5
+      md5: cd90e37c3a267830d391c1267aada4f1
+      size: 4752
+    - path: src/pipelines/run_feature_difference.py
+      hash: md5
+      md5: 14f45300b21bd2d6a991a0b0ddeb7497
+      size: 4898
+    outs:
+    - path: data/feature_store_engineered/v1/difference_catalog.csv
+      hash: md5
+      md5: c9f1e4b9c849f796916db3c008b3a28a
+      size: 2942
+    - path: data/feature_store_engineered/v1/difference_pipeline_manifest.json
+      hash: md5
+      md5: 3df3895a90718dd3df91f185b8ce8767
+      size: 7375
+    - path: data/feature_store_engineered/v1/test_difference_features.parquet
+      hash: md5
+      md5: ebf06ce70a28d9a3f22b6b453e3a1ad6
+      size: 47379008
+    - path: data/feature_store_engineered/v1/train_difference_features.parquet
+      hash: md5
+      md5: 2d2c5a091d5cb8467b26f6e1c2e611f3
+      size: 57300294
