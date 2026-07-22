@@ -1,0 +1,4 @@
+DeviceType,count,fraud_count,percentage,fraud_rate,relative_risk
+Missing,449730,9452,76.1557,2.1017,0.6007
+desktop,85165,5554,14.4215,6.5215,1.8638
+mobile,55645,5657,9.4227,10.1662,2.9055

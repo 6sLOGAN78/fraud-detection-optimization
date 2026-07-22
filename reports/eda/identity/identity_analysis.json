@@ -1,0 +1,10 @@
+{
+  "total_transactions": 590540,
+  "global_fraud_rate_pct": 3.499,
+  "identity_present_count": 140810,
+  "identity_missing_count": 449730,
+  "identity_coverage_pct": 23.8443,
+  "unique_browsers": 7,
+  "unique_devices": 1786,
+  "high_risk_profiles": 25
+}

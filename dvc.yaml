@@ -261,3 +261,26 @@ stages:
       - reports/eda/transaction/transaction_analysis.json
       - reports/eda/transaction/transaction_analysis_report.html
       - reports/eda/transaction/plots/
+  identity_analysis:
+    cmd: python3 -m src.pipelines.run_identity_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_identity_analysis.py
+      - src/eda/identity.py
+    outs:
+      - reports/eda/identity/identity_feature_inventory.csv
+      - reports/eda/identity/identity_metadata.json
+      - reports/eda/identity/identity_feature_analysis.csv
+      - reports/eda/identity/device_type_analysis.csv
+      - reports/eda/identity/device_info_analysis.csv
+      - reports/eda/identity/browser_analysis.csv
+      - reports/eda/identity/os_analysis.csv
+      - reports/eda/identity/identity_availability.csv
+      - reports/eda/identity/identity_missing_analysis.csv
+      - reports/eda/identity/identity_interactions.csv
+      - reports/eda/identity/identity_risk_profiles.csv
+      - reports/eda/identity/identity_feature_recommendations.csv
+      - reports/eda/identity/identity_analysis.json
+      - reports/eda/identity/identity_analysis_report.html
+      - reports/eda/identity/plots/

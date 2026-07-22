@@ -1,0 +1,5 @@
+avail_category,count,fraud_count,percentage,fraud_rate,relative_risk
+None,446307,9345,75.5761,2.0939,0.5984
+Low,3371,100,0.5708,2.9665,0.8478
+Medium,99875,8904,16.9125,8.9151,2.5479
+High,40987,2314,6.9406,5.6457,1.6135

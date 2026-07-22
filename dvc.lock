@@ -782,3 +782,84 @@ stages:
       hash: md5
       md5: 5e092eed47227348a039bd11c5514e3c
       size: 518
+  identity_analysis:
+    cmd: python3 -m src.pipelines.run_identity_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/identity.py
+      hash: md5
+      md5: 034111ebe07632da1741c97c977f14d8
+      size: 48074
+    - path: src/pipelines/run_identity_analysis.py
+      hash: md5
+      md5: 7b417758fda050aafd9d2580053db428
+      size: 2729
+    outs:
+    - path: reports/eda/identity/browser_analysis.csv
+      hash: md5
+      md5: bef42b1f864ab566cb9c46efa01546a7
+      size: 329
+    - path: reports/eda/identity/device_info_analysis.csv
+      hash: md5
+      md5: 4a1fa1f22144c2136c79e041a2dd3a31
+      size: 68746
+    - path: reports/eda/identity/device_type_analysis.csv
+      hash: md5
+      md5: 98e1da13ade6b79162eb6d2e903baa2a
+      size: 188
+    - path: reports/eda/identity/identity_analysis.json
+      hash: md5
+      md5: f656f44c980eff226f2fde1a1b751809
+      size: 254
+    - path: reports/eda/identity/identity_analysis_report.html
+      hash: md5
+      md5: 7a248c1ad16465c4fee5469257ca51e6
+      size: 51331
+    - path: reports/eda/identity/identity_availability.csv
+      hash: md5
+      md5: 1cfa53eb627915b4255a967666c0c25c
+      size: 219
+    - path: reports/eda/identity/identity_feature_analysis.csv
+      hash: md5
+      md5: 7a01cc6d3b841d72f870d24cbd197c20
+      size: 1714
+    - path: reports/eda/identity/identity_feature_inventory.csv
+      hash: md5
+      md5: 7f7c66f1064c0385d1a92b6dc202f199
+      size: 1863
+    - path: reports/eda/identity/identity_feature_recommendations.csv
+      hash: md5
+      md5: d46810b4a320b27c05f985008ceec1ac
+      size: 1826
+    - path: reports/eda/identity/identity_interactions.csv
+      hash: md5
+      md5: c75c409935969ddb4fe0a0f953c3da3b
+      size: 3793
+    - path: reports/eda/identity/identity_metadata.json
+      hash: md5
+      md5: a3d6524a18d010282aa3693a56da75cf
+      size: 108
+    - path: reports/eda/identity/identity_missing_analysis.csv
+      hash: md5
+      md5: 0a3be3a1eb90b4d2897cf4e2851464b6
+      size: 1478
+    - path: reports/eda/identity/identity_risk_profiles.csv
+      hash: md5
+      md5: 9c3431cce470221ae8a4dff72b40b439
+      size: 2000
+    - path: reports/eda/identity/os_analysis.csv
+      hash: md5
+      md5: 981576baf956bfc306ace0b1b261ab9a
+      size: 291
+    - path: reports/eda/identity/plots/
+      hash: md5
+      md5: 799ac16486c1f818bfc55406248cc082.dir
+      size: 83445
+      nfiles: 4

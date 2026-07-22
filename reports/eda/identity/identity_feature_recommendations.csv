@@ -1,0 +1,13 @@
+feature_group,engineered_feature,method,rationale,priority
+Identity Completeness,identity_completeness_score,Count non-null identity fields,High missingness tracks transactions where cards are present or absent; completeness score acts as validation proxy.,High
+Identity Completeness,identity_missing_indicator_id_01_id_11,Vector OR-pooling,Flag transactions missing critical customer attributes entirely.,High
+Device Features,device_info_freq_encoding,Frequency encoding (DeviceInfo),DeviceInfo has huge cardinality (>1000 brands). Frequency encodes market popularity.,High
+Device Features,device_info_risk_score,Target encoding (DeviceInfo),Capture risk values for specialized models.,High
+Device Features,is_desktop_device,Binary indicator (DeviceType == desktop),Distinct usage rates and fraud rate levels between desktops and mobile devices.,Medium
+Browser Info,browser_family,Keyword lookup extraction,"Group high-cardinality version lines (e.g., chrome 63.0.x) to a browser family.",High
+Browser Info,browser_rare_indicator,Frequency cut-off flag (<0.1%),Attackers often spoof obscure user agents. Flagging rare browsers maps anomaly signals.,Medium
+Operating System,os_family,Keyword lookup extraction,"Cluster OS names into Windows, macOS, OS X, iOS, Android, Linux.",High
+Operating System,os_risk_score,Target encoding (id_30),Older platform versions exhibit higher vulnerability rates.,Medium
+Cross-Features,devtype_browser_combo,Concatenate strings,Flag contradictory combinations (e.g. desktop + mobile safari) which signal browser spoofing.,High
+Cross-Features,browser_os_combo,Concatenate strings,Interaction encodes detailed customer device environment profile.,High
+Cross-Features,id_01_amt_ratio,Numerical id_01 / TransactionAmt,Ratio of numeric identity metrics to amount highlights abnormal values.,Medium
