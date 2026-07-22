@@ -1533,3 +1533,45 @@ stages:
       hash: md5
       md5: 70edfc012944272f184ee64ed1dd54b2
       size: 9699777
+  feature_encoding:
+    cmd: python3 -m src.pipelines.run_feature_encoding
+    deps:
+    - path: 
+        data/feature_store_engineered/v1/test_complete_feature_matrix.parquet
+      hash: md5
+      md5: b66ed777f4ca157127fc7565df1d101b
+      size: 8361206
+    - path: 
+        data/feature_store_engineered/v1/train_complete_feature_matrix.parquet
+      hash: md5
+      md5: 70edfc012944272f184ee64ed1dd54b2
+      size: 9699777
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_engineering/encoding.py
+      hash: md5
+      md5: bedf35c4365fe039ada6470cdfa0a6e8
+      size: 10372
+    - path: src/pipelines/run_feature_encoding.py
+      hash: md5
+      md5: 813f4eeca5fafd8e37be5e7ff6a6df6c
+      size: 7317
+    outs:
+    - path: data/feature_store_engineered/v1/encoding_pipeline_manifest.json
+      hash: md5
+      md5: b7625694e0564f26aaf13d1dd0cc6f50
+      size: 1966
+    - path: data/feature_store_engineered/v1/production_encoder_bundle.pkl
+      hash: md5
+      md5: d8ac171e28998a984400c3782ede445c
+      size: 285326
+    - path: data/feature_store_engineered/v1/test_encoded_features.parquet
+      hash: md5
+      md5: a157a054d6b59d837b9e71f54a0f99e8
+      size: 5369989
+    - path: data/feature_store_engineered/v1/train_encoded_features.parquet
+      hash: md5
+      md5: 0524a67b4b94983681f837b06aefa69d
+      size: 7840218

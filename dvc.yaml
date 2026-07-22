@@ -485,6 +485,21 @@ stages:
       - data/feature_store_engineered/v1/feature_family_metadata.json
       - data/feature_store_engineered/v1/feature_family_catalog.csv
 
+  feature_encoding:
+    cmd: python3 -m src.pipelines.run_feature_encoding
+    deps:
+      - data/feature_store_engineered/v1/train_complete_feature_matrix.parquet
+      - data/feature_store_engineered/v1/test_complete_feature_matrix.parquet
+      - data/interim/train_merged.parquet
+      - src/pipelines/run_feature_encoding.py
+      - src/feature_engineering/encoding.py
+    outs:
+      - data/feature_store_engineered/v1/train_encoded_features.parquet
+      - data/feature_store_engineered/v1/test_encoded_features.parquet
+      - data/feature_store_engineered/v1/production_encoder_bundle.pkl
+      - data/feature_store_engineered/v1/encoding_pipeline_manifest.json
+
+
 
 
 
