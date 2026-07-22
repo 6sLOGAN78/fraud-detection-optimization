@@ -2362,12 +2362,12 @@ stages:
       size: 2698
     - path: src/pipelines/run_model_comparison.py
       hash: md5
-      md5: ce88b8f4feafb97c0c4c94f88d28f0c3
-      size: 9340
+      md5: 3829c01b51329ed28537de36420448d8
+      size: 9679
     outs:
     - path: reports/models/model_comparison_report.html
       hash: md5
-      md5: c0bedd65c16481d14f970ba29b8f82e3
+      md5: 6379e67b2c0d2d5267c68b4e31a8a861
       size: 8468
   candidate_selection:
     cmd: python3 -m src.pipelines.run_candidate_selection
@@ -2414,7 +2414,7 @@ stages:
       size: 185269
     - path: reports/models/model_comparison_report.html
       hash: md5
-      md5: c0bedd65c16481d14f970ba29b8f82e3
+      md5: 6379e67b2c0d2d5267c68b4e31a8a861
       size: 8468
     - path: src/evaluation/selection.py
       hash: md5
@@ -2422,8 +2422,8 @@ stages:
       size: 1665
     - path: src/pipelines/run_candidate_selection.py
       hash: md5
-      md5: ff5a5238cf2bfdd6fbde042bfd1a2491
-      size: 10286
+      md5: 0e0eaa5fa1f832a1b1e762199690d81e
+      size: 10553
     outs:
     - path: data/models/v1/candidate_model.pkl
       hash: md5
@@ -2431,5 +2431,5 @@ stages:
       size: 49066
     - path: reports/models/candidate_selection_report.html
       hash: md5
-      md5: 66ac10fa773cc67214314ccd31724a99
+      md5: 8d04ceb5df5de5813445628de024fc8b
       size: 4583

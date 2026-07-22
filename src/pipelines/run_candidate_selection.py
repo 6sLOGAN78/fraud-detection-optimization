@@ -197,6 +197,9 @@ def generate_selection_hud_report(champion_name: str, champion_metrics: dict, ou
 def main() -> None:
     run_pre_execution_verification_gate()
     
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+    
     train_in = Path("data/feature_store_engineered/v1/train_selected_features.parquet")
     target_in = Path("data/interim/train_merged.parquet")
     registry_in = Path("data/feature_store_engineered/v1/feature_registry.json")
@@ -250,10 +253,13 @@ def main() -> None:
     shutil.copy(Path(champion_source_path), promoted_dest_path)
     logger.info("Champion model %s serialized copy promoted successfully to: %s", champion_name, promoted_dest_path)
     
-    out_report = Path("reports/models/candidate_selection_report.html")
+    out_dir = Path(config.paths.reports_dir) / "models"
+    out_report = out_dir / "candidate_selection_report.html"
     generate_selection_hud_report(champion_name, champion_metrics, out_report)
     
     logger.info("Logging Candidate Selection metrics to MLflow...")
+    mlflow.set_tracking_uri(config.mlflow.tracking_uri)
+    mlflow.set_experiment(config.mlflow.experiment_name)
     active = mlflow.active_run()
     started = False
     if active is None:

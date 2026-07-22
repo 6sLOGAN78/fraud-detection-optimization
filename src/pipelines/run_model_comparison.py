@@ -186,6 +186,9 @@ def generate_comparison_hud_report(comp_summary: dict, output_path: Path) -> Non
 def main() -> None:
     run_pre_execution_verification_gate()
     
+    from src.config.config import ConfigurationManager
+    config = ConfigurationManager().get_config()
+    
     train_in = Path("data/feature_store_engineered/v1/train_selected_features.parquet")
     target_in = Path("data/interim/train_merged.parquet")
     registry_in = Path("data/feature_store_engineered/v1/feature_registry.json")
@@ -226,13 +229,16 @@ def main() -> None:
         with open(Path(p), "rb") as f:
             models[name] = pickle.load(f)
             
-    comparator = ModelComparator()
+    comparator = ModelComparator(log_level=config.logging.level if hasattr(config, "logging") else "INFO")
     results = comparator.compare(models, X_val, y_val)
     
-    out_report = Path("reports/models/model_comparison_report.html")
+    out_dir = Path(config.paths.reports_dir) / "models"
+    out_report = out_dir / "model_comparison_report.html"
     generate_comparison_hud_report(results, out_report)
     
     logger.info("Logging Model Comparison statistics to MLflow...")
+    mlflow.set_tracking_uri(config.mlflow.tracking_uri)
+    mlflow.set_experiment(config.mlflow.experiment_name)
     active = mlflow.active_run()
     started = False
     if active is None:
