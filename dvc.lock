@@ -2009,3 +2009,43 @@ stages:
       hash: md5
       md5: 95c9be14cefcc6d41b2cbbe113a3274b
       size: 5673
+  baseline_models:
+    cmd: python3 -m src.pipelines.run_baseline_training
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/models/baseline.py
+      hash: md5
+      md5: 12524144ceedd0a57f86e581f22c5cd3
+      size: 5394
+    - path: src/pipelines/run_baseline_training.py
+      hash: md5
+      md5: 8698c30d8004ea0d48ed98bfedc8a1f8
+      size: 14583
+    outs:
+    - path: data/models/v1/baseline_lr.pkl
+      hash: md5
+      md5: e07373026112487f56e3d23e4e2b594a
+      size: 1496
+    - path: data/models/v1/baseline_xgb.pkl
+      hash: md5
+      md5: 1f33b40e8d87455216ffe7f21e95a0b2
+      size: 185262
+    - path: reports/models/baseline_models_report.html
+      hash: md5
+      md5: d29856998bf5cc99f70e573205c1d696
+      size: 6612
