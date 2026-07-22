@@ -1934,8 +1934,8 @@ stages:
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/test_missing_features.parquet
       hash: md5
       md5: 7f717575a8c91807520fc457fa14a7b8
@@ -1967,31 +1967,35 @@ stages:
     outs:
     - path: data/feature_store_engineered/v1/feature_selection_report.json
       hash: md5
-      md5: 72a7b493a5ead7fd32d0a6ace6ddc254
-      size: 20148
+      md5: 762dbd955c0d4c2855cdbbb6f10fbaa1
+      size: 20104
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
   model_development:
     cmd: python3 -m src.pipelines.run_model_training
     deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
@@ -2002,36 +2006,36 @@ stages:
       size: 8393
     - path: src/pipelines/run_model_training.py
       hash: md5
-      md5: bb0f816ee2caec1c0bfeb0918ae9abec
-      size: 11491
+      md5: b0ed914e7f423151a20f6eb72ad9e484
+      size: 11776
     outs:
     - path: data/models/v1/model_bundle.pkl
       hash: md5
-      md5: fc1ad14c51b8f0e1537139255be7687d
-      size: 401469
+      md5: 55ed140a1a1e28bcd20db3d3ee0d5510
+      size: 74748
     - path: reports/models/model_development_report.html
       hash: md5
-      md5: 95c9be14cefcc6d41b2cbbe113a3274b
-      size: 5673
+      md5: 36e32c4ea92970642c8e0fc9c9d2b456
+      size: 5674
   baseline_models:
     cmd: python3 -m src.pipelines.run_baseline_training
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
@@ -2047,35 +2051,35 @@ stages:
     outs:
     - path: data/models/v1/baseline_lr.pkl
       hash: md5
-      md5: dddff8549a8430270930a0ac93576c4d
-      size: 1496
+      md5: ab06c7ee021e4aa94fcc03dba9871c62
+      size: 1534
     - path: data/models/v1/baseline_xgb.pkl
       hash: md5
-      md5: 502446379bb9b2d815830e3777414e8a
-      size: 185262
+      md5: d3b8fea6f003b5bfe907e668265072df
+      size: 106946
     - path: reports/models/baseline_models_report.html
       hash: md5
-      md5: 5d655f2fcae27e43d6f5ba9f06df5daa
+      md5: 9260381be1655b3c4960524f66645af0
       size: 6612
   xgboost_model:
     cmd: python3 -m src.pipelines.run_xgboost_training
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
@@ -2091,31 +2095,31 @@ stages:
     outs:
     - path: data/models/v1/xgboost_model.pkl
       hash: md5
-      md5: 82f6eb62c68e11b841deab77a2e1ee2d
-      size: 185269
+      md5: 9e8917be906095a0d4d5eeade1b7cf14
+      size: 106953
     - path: reports/models/xgboost_report.html
       hash: md5
-      md5: 3d94b81703a6ff85c4261b91621ba32c
-      size: 4975
+      md5: 1e3cd1a4152aa223fc1d1409da453f45
+      size: 4977
   lightgbm_model:
     cmd: python3 -m src.pipelines.run_lightgbm_training
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
@@ -2131,31 +2135,31 @@ stages:
     outs:
     - path: data/models/v1/lightgbm_model.pkl
       hash: md5
-      md5: 6e4596fda1b22df42b8e9f989c0e318f
-      size: 223007
+      md5: 2c59d09b570df2bc87ec50313752dd4e
+      size: 88893
     - path: reports/models/lightgbm_report.html
       hash: md5
-      md5: 4223efdfa25f0cac6b89e378bd7bfeb0
-      size: 4975
+      md5: 780412d90a511d787db8004b386500ba
+      size: 4977
   catboost_model:
     cmd: python3 -m src.pipelines.run_catboost_training
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
@@ -2171,47 +2175,47 @@ stages:
     outs:
     - path: data/models/v1/catboost_model.pkl
       hash: md5
-      md5: 0286d8fb049ed40b074002198215f513
-      size: 49066
+      md5: e4a25c732e56bb6f1550b8079feae74e
+      size: 21487
     - path: reports/models/catboost_report.html
       hash: md5
-      md5: 6588a437b093861e3d157921ff39d363
-      size: 4975
+      md5: d757272a0f4b811aafeb82529a6e459d
+      size: 4976
   ensemble_model:
     cmd: python3 -m src.pipelines.run_ensemble_training
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/catboost_model.pkl
       hash: md5
-      md5: 0286d8fb049ed40b074002198215f513
-      size: 49066
+      md5: e4a25c732e56bb6f1550b8079feae74e
+      size: 21487
     - path: data/models/v1/lightgbm_model.pkl
       hash: md5
-      md5: 6e4596fda1b22df42b8e9f989c0e318f
-      size: 223007
+      md5: 2c59d09b570df2bc87ec50313752dd4e
+      size: 88893
     - path: data/models/v1/xgboost_model.pkl
       hash: md5
-      md5: 82f6eb62c68e11b841deab77a2e1ee2d
-      size: 185269
+      md5: 9e8917be906095a0d4d5eeade1b7cf14
+      size: 106953
     - path: src/models/ensemble.py
       hash: md5
       md5: 1f038e27dd4eed874197123fcceac73b
@@ -2223,39 +2227,43 @@ stages:
     outs:
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: 1f7405cc109ada5183d1c9f77700da3d
-      size: 457449
+      md5: 955dbf1c1e0fbc4ee02603788b95f721
+      size: 217445
     - path: reports/models/ensemble_report.html
       hash: md5
-      md5: 111346cfaf92ab36e5c61ee57035a8d1
-      size: 4986
+      md5: 34d657dd402cd4396762423f269104a0
+      size: 4987
   cv_evaluation:
     cmd: python3 -m src.pipelines.run_cv_evaluation
     deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: 6e8a4b5a88ed809e69d6a06f5beaa72b
-      size: 457449
+      md5: 955dbf1c1e0fbc4ee02603788b95f721
+      size: 217445
     - path: src/pipelines/run_cv_evaluation.py
       hash: md5
-      md5: 2f2d35d4203d031fc38ac45fdca3ff83
-      size: 10865
+      md5: 5cd4ce542b99c4758989ccb4ffcfbdc1
+      size: 11037
     - path: src/validation/cv.py
       hash: md5
       md5: b01d43e12c273211281b75b7bc592485
@@ -2263,127 +2271,135 @@ stages:
     outs:
     - path: reports/models/cv_report.html
       hash: md5
-      md5: b30480703f98a7de04a24e4bbd170fac
+      md5: bf854ffacc323ede0f733807559d2b7a
       size: 5157
   threshold_optimization:
     cmd: python3 -m src.pipelines.run_threshold_optimization
     deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: cf9b863ea82c94a98a5cb62744baa7b7
-      size: 457449
+      md5: 1fd1d9dcd8771ef15b59bd9092e79939
+      size: 217445
     - path: src/evaluation/thresholds.py
       hash: md5
       md5: a42ac2b9f47900a4e66da01f75984d54
       size: 3148
     - path: src/pipelines/run_threshold_optimization.py
       hash: md5
-      md5: a44d10a48af45b02696259bda057c398
-      size: 9214
+      md5: 28fe0adaef009896010d4f719be86f0d
+      size: 9349
     outs:
     - path: reports/models/threshold_optimization_report.html
       hash: md5
-      md5: 6c2d1694f5dcca83675d03e819ee28a9
+      md5: 5b8cb7f5a3cf481ba4073fdb3c703c6c
       size: 4420
   probability_calibration:
     cmd: python3 -m src.pipelines.run_probability_calibration
     deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: 6e8a4b5a88ed809e69d6a06f5beaa72b
-      size: 457449
+      md5: 1fd1d9dcd8771ef15b59bd9092e79939
+      size: 217445
     - path: src/evaluation/calibration.py
       hash: md5
       md5: 91add3852d07024d9c00e677d18e3adf
       size: 1804
     - path: src/pipelines/run_probability_calibration.py
       hash: md5
-      md5: 6aeb454a7a69da9dd7c26bf232adbc16
-      size: 8635
+      md5: e6f68fd0b5ab9912d5da00ba5a56cbeb
+      size: 8770
     outs:
     - path: reports/models/probability_calibration_report.html
       hash: md5
-      md5: b916ecbed52cd0eda63a273d12cb9ac5
+      md5: baf898278d402a56617c513610d7f09d
       size: 4252
   model_comparison:
     cmd: python3 -m src.pipelines.run_model_comparison
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/baseline_lr.pkl
       hash: md5
-      md5: dddff8549a8430270930a0ac93576c4d
-      size: 1496
+      md5: ab06c7ee021e4aa94fcc03dba9871c62
+      size: 1534
     - path: data/models/v1/baseline_xgb.pkl
       hash: md5
-      md5: 502446379bb9b2d815830e3777414e8a
-      size: 185262
+      md5: d3b8fea6f003b5bfe907e668265072df
+      size: 106946
     - path: data/models/v1/catboost_model.pkl
       hash: md5
-      md5: 0286d8fb049ed40b074002198215f513
-      size: 49066
+      md5: e4a25c732e56bb6f1550b8079feae74e
+      size: 21487
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: 1f7405cc109ada5183d1c9f77700da3d
-      size: 457449
+      md5: 1fd1d9dcd8771ef15b59bd9092e79939
+      size: 217445
     - path: data/models/v1/lightgbm_model.pkl
       hash: md5
-      md5: 6e4596fda1b22df42b8e9f989c0e318f
-      size: 223007
+      md5: 2c59d09b570df2bc87ec50313752dd4e
+      size: 88893
     - path: data/models/v1/xgboost_model.pkl
       hash: md5
-      md5: 82f6eb62c68e11b841deab77a2e1ee2d
-      size: 185269
+      md5: 9e8917be906095a0d4d5eeade1b7cf14
+      size: 106953
     - path: src/evaluation/comparison.py
       hash: md5
       md5: 644d577c8c3c1a93c467ec965b3be549
@@ -2395,58 +2411,58 @@ stages:
     outs:
     - path: reports/models/model_comparison_report.html
       hash: md5
-      md5: 24b9128be6bf356f52ad7deb23e271d2
+      md5: bda50d53e1081d118e2d0365d9fb8048
       size: 8468
   candidate_selection:
     cmd: python3 -m src.pipelines.run_candidate_selection
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: 9723e35e2b116f4ee2e5104f802f53e4
-      size: 713
+      md5: af94aee794a1196bdcec3a3b85bda869
+      size: 715
     - path: data/feature_store_engineered/v1/feature_registry.json
       hash: md5
-      md5: 41a6fcca08e682ee4c676ea2fa8dcd31
-      size: 1047
+      md5: 353692f4bb63ba93ffa9aebc37c4d0eb
+      size: 1246
     - path: data/feature_store_engineered/v1/test_selected_features.parquet
       hash: md5
-      md5: 8bf5116c03b2fe88dafa650282e12220
-      size: 3187999
+      md5: b74eb5dabf57ef8bf81cdecc81910d27
+      size: 2776460
     - path: data/feature_store_engineered/v1/train_selected_features.parquet
       hash: md5
-      md5: 485d6dbf5821b868412666b1fcc90560
-      size: 3690301
+      md5: af6bcd2b7cdac4ef5b885a943a17c6c9
+      size: 3182878
     - path: data/interim/train_merged.parquet
       hash: md5
       md5: b8fbac7935f8290c9a9977c05ecb6f9a
       size: 80437250
     - path: data/models/v1/baseline_lr.pkl
       hash: md5
-      md5: dddff8549a8430270930a0ac93576c4d
-      size: 1496
+      md5: ab06c7ee021e4aa94fcc03dba9871c62
+      size: 1534
     - path: data/models/v1/baseline_xgb.pkl
       hash: md5
-      md5: 502446379bb9b2d815830e3777414e8a
-      size: 185262
+      md5: d3b8fea6f003b5bfe907e668265072df
+      size: 106946
     - path: data/models/v1/catboost_model.pkl
       hash: md5
-      md5: 0286d8fb049ed40b074002198215f513
-      size: 49066
+      md5: e4a25c732e56bb6f1550b8079feae74e
+      size: 21487
     - path: data/models/v1/ensemble_model.pkl
       hash: md5
-      md5: 1f7405cc109ada5183d1c9f77700da3d
-      size: 457449
+      md5: 1fd1d9dcd8771ef15b59bd9092e79939
+      size: 217445
     - path: data/models/v1/lightgbm_model.pkl
       hash: md5
-      md5: 6e4596fda1b22df42b8e9f989c0e318f
-      size: 223007
+      md5: 2c59d09b570df2bc87ec50313752dd4e
+      size: 88893
     - path: data/models/v1/xgboost_model.pkl
       hash: md5
-      md5: 82f6eb62c68e11b841deab77a2e1ee2d
-      size: 185269
+      md5: 9e8917be906095a0d4d5eeade1b7cf14
+      size: 106953
     - path: reports/models/model_comparison_report.html
       hash: md5
-      md5: 24b9128be6bf356f52ad7deb23e271d2
+      md5: bda50d53e1081d118e2d0365d9fb8048
       size: 8468
     - path: src/evaluation/selection.py
       hash: md5
@@ -2459,9 +2475,9 @@ stages:
     outs:
     - path: data/models/v1/candidate_model.pkl
       hash: md5
-      md5: 0286d8fb049ed40b074002198215f513
-      size: 49066
+      md5: ab06c7ee021e4aa94fcc03dba9871c62
+      size: 1534
     - path: reports/models/candidate_selection_report.html
       hash: md5
-      md5: b83c1ffaef7c1b0f6f19621c482cb80f
-      size: 4583
+      md5: dfd18a8c6bbe0b6af9a053b33f1e06f6
+      size: 4586

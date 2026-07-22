@@ -34,10 +34,10 @@ paths:
   logs_dir: logs
 
 eda:
-  sample_size: 50000
+  sample_size: 100000
 
 training:
-  max_samples: 50000
+  max_samples: 200000
   val_ratio: 0.2
   decision_threshold: 0.05
 
