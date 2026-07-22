@@ -624,3 +624,161 @@ stages:
       hash: md5
       md5: 8cdb98a503e036a33e826e8f2ba10473
       size: 54960
+  categorical_analysis:
+    cmd: python3 -m src.pipelines.run_categorical_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/categorical.py
+      hash: md5
+      md5: d668a291eca7c1a29b884fe6b23f214e
+      size: 51871
+    - path: src/pipelines/run_categorical_analysis.py
+      hash: md5
+      md5: 93e31b1a7f2001b4986eb4ef8f77e24d
+      size: 2785
+    outs:
+    - path: reports/eda/categorical/cardinality_report.csv
+      hash: md5
+      md5: acf71798f8b6bdf8f89429f731299759
+      size: 1363
+    - path: reports/eda/categorical/categorical_analysis.json
+      hash: md5
+      md5: 45f50e759ce0cc8976e5d7f042c26e6a
+      size: 169
+    - path: reports/eda/categorical/categorical_analysis_report.html
+      hash: md5
+      md5: a52717eb213a024f769844f076e89fad
+      size: 40444
+    - path: reports/eda/categorical/categorical_features.csv
+      hash: md5
+      md5: 1d25d13faeaececfc85966ecf046fd03
+      size: 1854
+    - path: reports/eda/categorical/categorical_summary.json
+      hash: md5
+      md5: cce2409496e068c2fcab006d4d3f4a36
+      size: 568
+    - path: reports/eda/categorical/category_drift_report.json
+      hash: md5
+      md5: 8088b2e3b7f299df4075bc58daac10a6
+      size: 6449
+    - path: reports/eda/categorical/category_frequency.csv
+      hash: md5
+      md5: 58be5e94fa1185fb28a94658b5586ab0
+      size: 144235
+    - path: reports/eda/categorical/category_imbalance.csv
+      hash: md5
+      md5: 64ba86a8cfaefd89f0131fda9c011318
+      size: 2447
+    - path: reports/eda/categorical/category_stability.csv
+      hash: md5
+      md5: 3ef627059641c668e57af78abd51fbba
+      size: 1308
+    - path: reports/eda/categorical/encoding_recommendations.csv
+      hash: md5
+      md5: da1d5e3f77b91790481619eaa4bcace1
+      size: 4427
+    - path: reports/eda/categorical/fraud_rate_by_category.csv
+      hash: md5
+      md5: bb53a6c2967f404bcbcbe4290634c214
+      size: 110742
+    - path: reports/eda/categorical/freq_plots/
+      hash: md5
+      md5: c5305835503898adaf84137a667b63fa.dir
+      size: 439974
+      nfiles: 24
+    - path: reports/eda/categorical/frequency_summary.json
+      hash: md5
+      md5: dab246ea0f021ad6722e810595858a01
+      size: 8335
+    - path: reports/eda/categorical/rare_categories.csv
+      hash: md5
+      md5: f93e595b464f43e990cdea81002250e5
+      size: 2134
+    - path: reports/eda/categorical/rare_category_summary.json
+      hash: md5
+      md5: cdd033a96bdf825fb863e0518604277d
+      size: 4137
+    - path: reports/eda/categorical/target_distribution_by_category.csv
+      hash: md5
+      md5: 9e0e1429774f2295cb7581df8c6a6ee9
+      size: 145877
+  transaction_analysis:
+    cmd: python3 -m src.pipelines.run_transaction_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/transaction.py
+      hash: md5
+      md5: ed8692919069bbcc28dba48b46444a47
+      size: 44701
+    - path: src/pipelines/run_transaction_analysis.py
+      hash: md5
+      md5: 34a5c8c9f3b2968d40cc4c7c1f743676
+      size: 2756
+    outs:
+    - path: reports/eda/transaction/address_feature_analysis.csv
+      hash: md5
+      md5: a9986207f390f8a4539ee9287496aa4d
+      size: 285
+    - path: reports/eda/transaction/card_feature_analysis.csv
+      hash: md5
+      md5: b2511a6ffc5996042e8f5223ef1d75eb
+      size: 414
+    - path: reports/eda/transaction/distance_feature_analysis.csv
+      hash: md5
+      md5: bcfdfb23062495cfebff3f55060ed451
+      size: 553
+    - path: reports/eda/transaction/plots/
+      hash: md5
+      md5: 1f9e6b8ca723304cbdc4955fa3ee91d4.dir
+      size: 87852
+      nfiles: 4
+    - path: reports/eda/transaction/productcd_analysis.csv
+      hash: md5
+      md5: 109f24b0953ecda8825594bb53e48afe
+      size: 247
+    - path: reports/eda/transaction/transaction_amount_analysis.csv
+      hash: md5
+      md5: 01df7ae2a812de2695379be539731fe4
+      size: 313
+    - path: reports/eda/transaction/transaction_amount_stats.json
+      hash: md5
+      md5: f67e73ea4d3e75cab54100027ce41a39
+      size: 310
+    - path: reports/eda/transaction/transaction_analysis.json
+      hash: md5
+      md5: d00a854fd92db4e15da69fa8a240dd0a
+      size: 253
+    - path: reports/eda/transaction/transaction_analysis_report.html
+      hash: md5
+      md5: da603d58f4d45f16571ba0b80bb7167d
+      size: 28874
+    - path: reports/eda/transaction/transaction_feature_interactions.csv
+      hash: md5
+      md5: 67fe1429ab80d7612cdf166dbc27f114
+      size: 58491
+    - path: reports/eda/transaction/transaction_feature_recommendations.csv
+      hash: md5
+      md5: ea51f94e97bd5ac5a42b7be33732bc7c
+      size: 1735
+    - path: reports/eda/transaction/transaction_risk_profiles.csv
+      hash: md5
+      md5: 7af9f8ea3ec5f70c54ae31b83415fe91
+      size: 4659
+    - path: reports/eda/transaction/transaction_time_analysis.csv
+      hash: md5
+      md5: 5e092eed47227348a039bd11c5514e3c
+      size: 518

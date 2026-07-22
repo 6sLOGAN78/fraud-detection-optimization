@@ -1,0 +1,15 @@
+feature_group,engineered_feature,method,rationale,priority
+TransactionAmt,log1p_TransactionAmt,log1p transform,Highly right-skewed; log reduces tail and stabilizes variance.,High
+TransactionAmt,amt_bin,Quantile binning (5 bands),Non-linear fraud signal varies by amount magnitude.,High
+TransactionAmt,amt_zscore,Z-score normalization,Flag extreme outlier amounts per-user or globally.,Medium
+Card Features,card_freq_encoding,Frequency encoding,High-cardinality card1/card2; frequency proxy for card volume.,High
+Card Features,card_risk_score,Target encoding,card4/card6 fraud rates encode network-level risk.,High
+Card Features,card1_card2_combo,Concatenation hash,Unique card combinations identify specific cards without raw IDs.,Medium
+Address Features,addr1_freq_encoding,Frequency encoding,Address frequency signals shipping volume — high freq = retail.,Medium
+Address Features,addr_fraud_rate_encoding,Target encoding,Capture geographical fraud hotspots.,High
+Distance Features,dist1_bin,Quantile binning (Near/Medium/Far/Extreme),Extreme distances correlate with card-not-present fraud.,Medium
+Distance Features,dist1_missing_flag,Binary missingness indicator,dist1 missing often means card-present transaction.,Medium
+Timing,hour_of_day,Modular arithmetic on TransactionDT,"Fraud spikes at specific hours (e.g., late night).",High
+Timing,day_of_week,Modular arithmetic on TransactionDT,Weekend vs. weekday fraud patterns differ significantly.,High
+Cross Features,product_card_interaction,Label(ProductCD) × card4 frequency encoding,Product-card combination reveals specific risk patterns.,High
+Cross Features,amt_product_ratio,TransactionAmt / ProductCD mean amt,Deviation from product average amount flags anomalies.,Medium

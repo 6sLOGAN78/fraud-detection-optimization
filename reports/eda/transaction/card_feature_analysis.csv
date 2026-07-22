@@ -1,0 +1,7 @@
+feature,n_unique,missing_pct,dominant_category,dominant_pct,highest_fraud_category,highest_fraud_rate,relative_risk
+card1,13553,0.0,7919,2.5285,1045,100.0,28.5796
+card2,500,1.5127,321.0,8.4138,289.0,40.678,11.6256
+card3,114,0.265,150.0,88.5075,125.0,100.0,28.5796
+card4,4,0.267,visa,65.3296,discover,7.7282,2.2087
+card5,119,0.7212,226.0,50.5809,167.0,100.0,28.5796
+card6,4,0.266,debit,74.6963,credit,6.6785,1.9087

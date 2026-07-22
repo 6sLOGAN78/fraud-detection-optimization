@@ -216,7 +216,48 @@ stages:
       - reports/eda/numerical/histograms/
       - reports/eda/numerical/boxplots/
       - reports/eda/numerical/violin_plots/
-
-
-
-
+  categorical_analysis:
+    cmd: python3 -m src.pipelines.run_categorical_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_categorical_analysis.py
+      - src/eda/categorical.py
+    outs:
+      - reports/eda/categorical/categorical_features.csv
+      - reports/eda/categorical/categorical_summary.json
+      - reports/eda/categorical/category_frequency.csv
+      - reports/eda/categorical/frequency_summary.json
+      - reports/eda/categorical/cardinality_report.csv
+      - reports/eda/categorical/rare_categories.csv
+      - reports/eda/categorical/rare_category_summary.json
+      - reports/eda/categorical/category_imbalance.csv
+      - reports/eda/categorical/fraud_rate_by_category.csv
+      - reports/eda/categorical/target_distribution_by_category.csv
+      - reports/eda/categorical/category_stability.csv
+      - reports/eda/categorical/category_drift_report.json
+      - reports/eda/categorical/encoding_recommendations.csv
+      - reports/eda/categorical/categorical_analysis.json
+      - reports/eda/categorical/categorical_analysis_report.html
+      - reports/eda/categorical/freq_plots/
+  transaction_analysis:
+    cmd: python3 -m src.pipelines.run_transaction_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_transaction_analysis.py
+      - src/eda/transaction.py
+    outs:
+      - reports/eda/transaction/transaction_amount_analysis.csv
+      - reports/eda/transaction/transaction_amount_stats.json
+      - reports/eda/transaction/productcd_analysis.csv
+      - reports/eda/transaction/card_feature_analysis.csv
+      - reports/eda/transaction/address_feature_analysis.csv
+      - reports/eda/transaction/distance_feature_analysis.csv
+      - reports/eda/transaction/transaction_time_analysis.csv
+      - reports/eda/transaction/transaction_feature_interactions.csv
+      - reports/eda/transaction/transaction_risk_profiles.csv
+      - reports/eda/transaction/transaction_feature_recommendations.csv
+      - reports/eda/transaction/transaction_analysis.json
+      - reports/eda/transaction/transaction_analysis_report.html
+      - reports/eda/transaction/plots/

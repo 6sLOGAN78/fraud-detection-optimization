@@ -1,0 +1,11 @@
+{
+  "total_transactions": 590540,
+  "fraud_transactions": 20663,
+  "global_fraud_rate_pct": 3.499,
+  "amt_mean": 135.0272,
+  "amt_median": 68.769,
+  "amt_max": 31937.3906,
+  "product_count": 5,
+  "card_features_analyzed": 6,
+  "high_risk_profiles": 43
+}

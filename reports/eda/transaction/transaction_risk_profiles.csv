@@ -1,0 +1,101 @@
+amt_bin,ProductCD,card4,card6,transaction_count,fraud_count,fraud_rate,risk_label
+Low,W,visa,debit,148243,2282,1.5394,Moderate
+Medium,W,visa,debit,91617,1886,2.0586,Moderate
+Low,W,mastercard,debit,69531,655,0.942,Low
+Medium,W,mastercard,debit,40633,681,1.676,Moderate
+Medium,W,visa,credit,20372,907,4.4522,Moderate
+Low,C,visa,debit,16207,1457,8.9899,High
+Low,W,visa,credit,13576,403,2.9685,Moderate
+Medium,W,mastercard,credit,13462,482,3.5804,Moderate
+Low,C,visa,credit,10494,1727,16.457,Critical
+Low,H,visa,debit,9953,262,2.6324,Moderate
+Low,W,mastercard,credit,9627,385,3.9992,Moderate
+Low,C,mastercard,debit,9590,712,7.4244,High
+Low,H,visa,credit,9086,226,2.4873,Moderate
+Low,C,mastercard,credit,8037,1294,16.1005,Critical
+Medium,R,visa,credit,7553,459,6.0771,High
+High,W,visa,debit,7442,247,3.319,Moderate
+Very Low,C,visa,debit,7321,497,6.7887,High
+Low,R,visa,credit,6428,121,1.8824,Moderate
+High,W,visa,credit,5128,370,7.2153,High
+Very Low,C,mastercard,debit,5089,390,7.6636,High
+Low,R,visa,debit,4938,54,1.0936,Moderate
+Very Low,C,visa,credit,3794,717,18.8983,Critical
+Medium,R,visa,debit,3668,232,6.325,High
+Medium,R,american express,credit,3633,91,2.5048,Moderate
+Very Low,W,visa,debit,3607,38,1.0535,Moderate
+Low,H,mastercard,credit,3587,63,1.7563,Moderate
+High,W,mastercard,debit,3340,99,2.9641,Moderate
+High,W,mastercard,credit,3089,112,3.6258,Moderate
+Low,H,mastercard,debit,2840,79,2.7817,Moderate
+Very Low,C,mastercard,credit,2819,384,13.6219,High
+Medium,R,mastercard,credit,2685,234,8.7151,High
+Low,R,mastercard,credit,2182,33,1.5124,Moderate
+Low,R,american express,credit,2161,17,0.7867,Low
+Medium,W,discover,credit,2029,179,8.8221,High
+Low,S,visa,debit,2007,98,4.8829,Moderate
+Very Low,W,mastercard,debit,1837,17,0.9254,Low
+Low,S,visa,credit,1779,77,4.3283,Moderate
+Medium,C,visa,debit,1643,170,10.3469,High
+Very Low,S,visa,debit,1605,140,8.7227,High
+Medium,H,visa,credit,1525,254,16.6557,Critical
+Medium,C,visa,credit,1432,347,24.2318,Critical
+Low,R,mastercard,debit,1389,10,0.7199,Low
+Medium,S,mastercard,credit,1349,32,2.3721,Moderate
+Low,H,american express,credit,1203,35,2.9094,Moderate
+Medium,H,visa,debit,1197,253,21.1362,Critical
+Low,W,discover,credit,1155,40,3.4632,Moderate
+Low,S,mastercard,credit,1072,84,7.8358,High
+Medium,R,mastercard,debit,1007,86,8.5402,High
+Medium,C,mastercard,credit,972,191,19.6502,Critical
+Medium,C,mastercard,debit,910,100,10.989,High
+Medium,H,mastercard,credit,780,181,23.2051,Critical
+High,W,discover,credit,774,103,13.3075,High
+Very Low,H,visa,debit,746,14,1.8767,Moderate
+Low,S,mastercard,debit,695,38,5.4676,High
+Very High,W,visa,debit,665,24,3.609,Moderate
+Very Low,S,mastercard,debit,639,20,3.1299,Moderate
+Very High,W,visa,credit,630,10,1.5873,Moderate
+Low,R,discover,credit,569,24,4.2179,Moderate
+Very Low,S,visa,credit,555,20,3.6036,Moderate
+Low,H,discover,credit,503,22,4.3738,Moderate
+Medium,R,discover,credit,485,31,6.3918,High
+Low,S,discover,credit,403,68,16.8734,Critical
+Very Low,H,visa,credit,400,15,3.75,Moderate
+Low,S,american express,credit,399,28,7.0175,High
+Very High,W,mastercard,credit,385,3,0.7792,Low
+High,R,visa,credit,375,11,2.9333,Moderate
+Medium,H,mastercard,debit,348,78,22.4138,Critical
+Medium,S,visa,credit,313,32,10.2236,High
+Medium,H,american express,credit,277,52,18.7726,Critical
+Very High,W,mastercard,debit,272,3,1.1029,Moderate
+High,R,american express,credit,267,0,0.0,Low
+Very Low,W,visa,credit,253,7,2.7668,Moderate
+Very Low,S,mastercard,credit,241,14,5.8091,High
+Very Low,H,mastercard,debit,222,4,1.8018,Moderate
+Very Low,W,mastercard,credit,181,1,0.5525,Low
+Very Low,H,mastercard,credit,161,8,4.9689,Moderate
+Low,W,discover,debit,156,0,0.0,Low
+High,R,mastercard,credit,137,10,7.2993,High
+Medium,W,discover,debit,133,8,6.015,High
+Very Low,S,discover,credit,120,3,2.5,Moderate
+Very Low,S,american express,credit,98,4,4.0816,Moderate
+Medium,S,american express,credit,93,3,3.2258,Moderate
+Medium,S,visa,debit,86,7,8.1395,High
+High,R,visa,debit,77,8,10.3896,High
+Medium,H,discover,credit,70,19,27.1429,Critical
+Very High,W,discover,credit,69,2,2.8986,Moderate
+Medium,S,discover,credit,53,6,11.3208,High
+Medium,R,american express,debit,41,3,7.3171,High
+Medium,S,mastercard,debit,40,12,30.0,Critical
+Very Low,H,american express,credit,38,2,5.2632,High
+High,S,visa,credit,38,0,0.0,Low
+Low,H,american express,debit,35,1,2.8571,Moderate
+High,R,mastercard,debit,32,0,0.0,Low
+High,W,discover,debit,31,2,6.4516,High
+Low,R,american express,debit,27,0,0.0,Low
+High,R,discover,credit,24,1,4.1667,Moderate
+Very Low,H,discover,credit,23,0,0.0,Low
+Very Low,W,discover,credit,23,2,8.6957,High
+Low,S,american express,debit,19,0,0.0,Low
+Low,W,mastercard,debit or credit,16,0,0.0,Low
