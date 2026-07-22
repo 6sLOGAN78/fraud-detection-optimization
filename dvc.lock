@@ -1403,3 +1403,63 @@ stages:
       hash: md5
       md5: d75977bbeebdf32cb3d8eefb6aded9d8
       size: 836
+  automated_reporting:
+    cmd: python3 -m src.pipelines.run_automated_reporting
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/reporting.py
+      hash: md5
+      md5: 3da7643aaca175021c0950fa4946d8ec
+      size: 34930
+    - path: src/pipelines/run_automated_reporting.py
+      hash: md5
+      md5: ce2713433fd2f20de5ca66bbc7c695a7
+      size: 1503
+    outs:
+    - path: reports/dashboards/
+      hash: md5
+      md5: 2c40b8462f69df8758b3e5439a2c9dfe.dir
+      size: 13567
+      nfiles: 1
+    - path: reports/dvc/
+      hash: md5
+      md5: 4fed2faa7624e2934ddffafd3b57d6bd.dir
+      size: 841
+      nfiles: 2
+    - path: reports/html/
+      hash: md5
+      md5: 47ed8dbec152ec0f65c1024fa961dba1.dir
+      size: 27134
+      nfiles: 2
+    - path: reports/json/
+      hash: md5
+      md5: ec298c10681f07abfba84c14f52167fb.dir
+      size: 2882
+      nfiles: 3
+    - path: reports/markdown/
+      hash: md5
+      md5: f41d7559061fe322d3e4c62011223ea5.dir
+      size: 1554
+      nfiles: 4
+    - path: reports/metadata/
+      hash: md5
+      md5: 6fef8b451b554983ec89a7706edd6686.dir
+      size: 2271
+      nfiles: 7
+    - path: reports/mlflow/
+      hash: md5
+      md5: d0ca9e92d3f03ae0900f7c51b6721a51.dir
+      size: 103
+      nfiles: 1
+    - path: reports/pdf/
+      hash: md5
+      md5: d0f5f654ec099b5aeccd6adf2ecb6fbd.dir
+      size: 5384
+      nfiles: 2

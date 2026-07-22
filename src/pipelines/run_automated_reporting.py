@@ -1,0 +1,53 @@
+"""Pipeline script to run Automated Report Generation — Part 3.17."""
+
+from __future__ import annotations
+
+import logging
+import sys
+from pathlib import Path
+
+import pandas as pd
+
+from src.eda.reporting import AutomatedReporter
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def main() -> None:
+    # 1. Dependency gate: check upstream merged parquet files exist
+    logger.info("Executing Pre-Execution Pipeline Verification Gate...")
+
+    train_path = Path("data/interim/train_merged.parquet")
+    test_path = Path("data/interim/test_merged.parquet")
+
+    if not train_path.exists() or not test_path.exists():
+        logger.error(
+            "Dependency verification failed! Missing intermediate datasets: train_merged=%s, test_merged=%s",
+            train_path.exists(),
+            test_path.exists(),
+        )
+        sys.exit(1)
+
+    logger.info("Dependency gate passed — all upstream datasets are present.")
+
+    # Load parquets
+    logger.info("Loading train and test parquets...")
+    df_train = pd.read_parquet(train_path)
+    df_test = pd.read_parquet(test_path)
+
+    # Initialize and run AutomatedReporter
+    logger.info("Initializing Automated Reporter...")
+    reporter = AutomatedReporter(
+        df_train=df_train,
+        df_test=df_test,
+    )
+
+    logger.info("Executing Automated Reporting pipeline...")
+    reporter.run_all()
+
+    logger.info("Automated Reporting pipeline completed successfully.")
+
+
+if __name__ == "__main__":
+    main()

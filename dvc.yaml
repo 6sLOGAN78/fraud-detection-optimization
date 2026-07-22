@@ -443,6 +443,24 @@ stages:
       - reports/eda/leakage/leakage_report.html
       - reports/eda/leakage/plots/
 
+  automated_reporting:
+    cmd: python3 -m src.pipelines.run_automated_reporting
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_automated_reporting.py
+      - src/eda/reporting.py
+    outs:
+      - reports/html/
+      - reports/pdf/
+      - reports/markdown/
+      - reports/json/
+      - reports/dashboards/
+      - reports/metadata/
+      - reports/mlflow/
+      - reports/dvc/
+
+
 
 
 
