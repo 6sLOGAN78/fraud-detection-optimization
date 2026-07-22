@@ -354,3 +354,27 @@ stages:
       - reports/eda/correlation/removed_features.csv
       - reports/eda/correlation/correlation_analysis_report.html
       - reports/eda/correlation/plots/
+
+  interaction_analysis:
+    cmd: python3 -m src.pipelines.run_interaction_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_interaction_analysis.py
+      - src/eda/interaction.py
+    outs:
+      - reports/eda/interaction/interaction_feature_inventory.csv
+      - reports/eda/interaction/interaction_metadata.json
+      - reports/eda/interaction/pairplot_analysis.csv
+      - reports/eda/interaction/cross_feature_analysis.csv
+      - reports/eda/interaction/fraud_interactions.csv
+      - reports/eda/interaction/interaction_strength.csv
+      - reports/eda/interaction/higher_order_interactions.csv
+      - reports/eda/interaction/interaction_clusters.csv
+      - reports/eda/interaction/interaction_feature_recommendations.csv
+      - reports/eda/interaction/interaction_stability.csv
+      - reports/eda/interaction/interaction_drift_report.json
+      - reports/eda/interaction/production_interaction_screening.csv
+      - reports/eda/interaction/interaction_analysis_report.html
+      - reports/eda/interaction/plots/
+

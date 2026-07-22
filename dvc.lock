@@ -1110,3 +1110,80 @@ stages:
       hash: md5
       md5: 1e2eb415920ddaebfe95fc24fdc8e4b3
       size: 16903
+  interaction_analysis:
+    cmd: python3 -m src.pipelines.run_interaction_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/interaction.py
+      hash: md5
+      md5: 83e2d835753943f45dfa8f5abdbddc79
+      size: 42311
+    - path: src/pipelines/run_interaction_analysis.py
+      hash: md5
+      md5: e0dba507fa7d7c10a227f12958b1a1e8
+      size: 2087
+    outs:
+    - path: reports/eda/interaction/cross_feature_analysis.csv
+      hash: md5
+      md5: c7615bd6add0bbd2fcce3ba71b9024e7
+      size: 933
+    - path: reports/eda/interaction/fraud_interactions.csv
+      hash: md5
+      md5: 7cbfd7077f2fe3af93b5b5f2e4102b18
+      size: 1880
+    - path: reports/eda/interaction/higher_order_interactions.csv
+      hash: md5
+      md5: 70829a783848bf00c89627f189a31d68
+      size: 752
+    - path: reports/eda/interaction/interaction_analysis_report.html
+      hash: md5
+      md5: a14c4f78d2943e12472c86bd654cc974
+      size: 16574
+    - path: reports/eda/interaction/interaction_clusters.csv
+      hash: md5
+      md5: 54fd206c69e00ba1033101579bf710ad
+      size: 148
+    - path: reports/eda/interaction/interaction_drift_report.json
+      hash: md5
+      md5: 569f38768b170a8a5b5b7ccf3dec20ca
+      size: 75
+    - path: reports/eda/interaction/interaction_feature_inventory.csv
+      hash: md5
+      md5: 7c0a2d437bcb69c75824655165da73a9
+      size: 419
+    - path: reports/eda/interaction/interaction_feature_recommendations.csv
+      hash: md5
+      md5: 61a6d86e83353fffab5af6bb67caf31e
+      size: 2050
+    - path: reports/eda/interaction/interaction_metadata.json
+      hash: md5
+      md5: 29947fd8e817861f2c88b80128178b59
+      size: 143
+    - path: reports/eda/interaction/interaction_stability.csv
+      hash: md5
+      md5: 3208371e797163795ae71ed483c1f74f
+      size: 72
+    - path: reports/eda/interaction/interaction_strength.csv
+      hash: md5
+      md5: 29a25a0849507fd8bc15acbb904c81cd
+      size: 5771
+    - path: reports/eda/interaction/pairplot_analysis.csv
+      hash: md5
+      md5: cdcb5a599271d120022d34eb0c173655
+      size: 1070
+    - path: reports/eda/interaction/plots/
+      hash: md5
+      md5: a64f6bac67a68eb4c6976827a82c496a.dir
+      size: 92258
+      nfiles: 3
+    - path: reports/eda/interaction/production_interaction_screening.csv
+      hash: md5
+      md5: 6d7f519b85ab0df4d1ee87faaf5e6c58
+      size: 172
