@@ -468,7 +468,23 @@ stages:
       - src/pipelines/run_feature_engineering.py
       - src/feature_engineering/pipeline.py
     outs:
-      - data/feature_store_engineered/
+      - data/feature_store_engineered/v1/train_features.parquet
+      - data/feature_store_engineered/v1/test_features.parquet
+      - data/feature_store_engineered/v1/manifest.json
+
+  feature_families:
+    cmd: python3 -m src.pipelines.run_feature_families
+    deps:
+      - data/feature_store_engineered/v1/train_features.parquet
+      - data/feature_store_engineered/v1/test_features.parquet
+      - src/pipelines/run_feature_families.py
+      - src/feature_engineering/families.py
+    outs:
+      - data/feature_store_engineered/v1/train_complete_feature_matrix.parquet
+      - data/feature_store_engineered/v1/test_complete_feature_matrix.parquet
+      - data/feature_store_engineered/v1/feature_family_metadata.json
+      - data/feature_store_engineered/v1/feature_family_catalog.csv
+
 
 
 

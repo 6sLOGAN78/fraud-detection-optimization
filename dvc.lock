@@ -1483,8 +1483,53 @@ stages:
       md5: 5176f0ba3b949ad1aba8dbe3c3e4394c
       size: 1566
     outs:
-    - path: data/feature_store_engineered/
+    - path: data/feature_store_engineered/v1/manifest.json
       hash: md5
-      md5: ffbf50468410b9a966758868f10a6a4c.dir
-      size: 158649138
-      nfiles: 3
+      md5: 5f7efdbfceb87f0e62b70f7ac62f3dd4
+      size: 1493
+    - path: data/feature_store_engineered/v1/test_features.parquet
+      hash: md5
+      md5: ae57ec01d85d286531b742002a5008f2
+      size: 73821499
+    - path: data/feature_store_engineered/v1/train_features.parquet
+      hash: md5
+      md5: 0070ead2be309dc5fd44d71c5e600a8e
+      size: 84826146
+  feature_families:
+    cmd: python3 -m src.pipelines.run_feature_families
+    deps:
+    - path: data/feature_store_engineered/v1/test_features.parquet
+      hash: md5
+      md5: ae57ec01d85d286531b742002a5008f2
+      size: 73821499
+    - path: data/feature_store_engineered/v1/train_features.parquet
+      hash: md5
+      md5: 0070ead2be309dc5fd44d71c5e600a8e
+      size: 84826146
+    - path: src/feature_engineering/families.py
+      hash: md5
+      md5: 5363d804bd6a87b339d0aa30219e64e6
+      size: 10827
+    - path: src/pipelines/run_feature_families.py
+      hash: md5
+      md5: 67f33a43e5482a8e9feda088527ff526
+      size: 4159
+    outs:
+    - path: data/feature_store_engineered/v1/feature_family_catalog.csv
+      hash: md5
+      md5: 468ea96545b360860c60630cb20fb4f0
+      size: 1359
+    - path: data/feature_store_engineered/v1/feature_family_metadata.json
+      hash: md5
+      md5: 1a53da24f6f33ea893520dc4c1bb8383
+      size: 3347
+    - path: 
+        data/feature_store_engineered/v1/test_complete_feature_matrix.parquet
+      hash: md5
+      md5: b66ed777f4ca157127fc7565df1d101b
+      size: 8361206
+    - path: 
+        data/feature_store_engineered/v1/train_complete_feature_matrix.parquet
+      hash: md5
+      md5: 70edfc012944272f184ee64ed1dd54b2
+      size: 9699777
