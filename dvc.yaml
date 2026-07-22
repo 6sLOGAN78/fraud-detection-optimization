@@ -578,6 +578,18 @@ stages:
       - data/feature_store_engineered/v1/missing_pipeline_manifest.json
       - data/feature_store_engineered/v1/missing_catalog.csv
 
+  feature_validation:
+    cmd: python3 -m src.pipelines.run_feature_validation
+    deps:
+      - data/feature_store_engineered/v1/train_missing_features.parquet
+      - data/feature_store_engineered/v1/test_missing_features.parquet
+      - src/pipelines/run_feature_validation.py
+      - src/feature_engineering/validation.py
+    outs:
+      - data/feature_store_engineered/v1/train_validation_report.json
+      - data/feature_store_engineered/v1/test_validation_report.json
+
+
 
 
 

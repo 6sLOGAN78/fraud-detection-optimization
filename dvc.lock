@@ -1811,3 +1811,31 @@ stages:
       hash: md5
       md5: 01e67fac6b7c0038ffb1f804cf4d86d7
       size: 29803200
+  feature_validation:
+    cmd: python3 -m src.pipelines.run_feature_validation
+    deps:
+    - path: data/feature_store_engineered/v1/test_missing_features.parquet
+      hash: md5
+      md5: 7f717575a8c91807520fc457fa14a7b8
+      size: 22772730
+    - path: data/feature_store_engineered/v1/train_missing_features.parquet
+      hash: md5
+      md5: 01e67fac6b7c0038ffb1f804cf4d86d7
+      size: 29803200
+    - path: src/feature_engineering/validation.py
+      hash: md5
+      md5: e38aea625715b6ca6907f57c183c3229
+      size: 6971
+    - path: src/pipelines/run_feature_validation.py
+      hash: md5
+      md5: 0931c58d0321f01fd582d3090c6d5d45
+      size: 4368
+    outs:
+    - path: data/feature_store_engineered/v1/test_validation_report.json
+      hash: md5
+      md5: 397baf9b5a9f4467188083e0f1cfcfe1
+      size: 8799
+    - path: data/feature_store_engineered/v1/train_validation_report.json
+      hash: md5
+      md5: 902edfb54b71496cdd36f3a2b7283b24
+      size: 872
