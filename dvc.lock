@@ -2369,3 +2369,67 @@ stages:
       hash: md5
       md5: c0bedd65c16481d14f970ba29b8f82e3
       size: 8468
+  candidate_selection:
+    cmd: python3 -m src.pipelines.run_candidate_selection
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: data/models/v1/baseline_lr.pkl
+      hash: md5
+      md5: e07373026112487f56e3d23e4e2b594a
+      size: 1496
+    - path: data/models/v1/baseline_xgb.pkl
+      hash: md5
+      md5: 1f33b40e8d87455216ffe7f21e95a0b2
+      size: 185262
+    - path: data/models/v1/catboost_model.pkl
+      hash: md5
+      md5: 6ed4c5be368b7a70b7ebc7b5b451c2a0
+      size: 49066
+    - path: data/models/v1/ensemble_model.pkl
+      hash: md5
+      md5: 6e8a4b5a88ed809e69d6a06f5beaa72b
+      size: 457449
+    - path: data/models/v1/lightgbm_model.pkl
+      hash: md5
+      md5: 812e23a629367533d36da92dc1986a9a
+      size: 223007
+    - path: data/models/v1/xgboost_model.pkl
+      hash: md5
+      md5: 957fc5dcb0c18cc6358ec811812c8474
+      size: 185269
+    - path: reports/models/model_comparison_report.html
+      hash: md5
+      md5: c0bedd65c16481d14f970ba29b8f82e3
+      size: 8468
+    - path: src/evaluation/selection.py
+      hash: md5
+      md5: eee17834fae43501f13bfb719c12a2a3
+      size: 1665
+    - path: src/pipelines/run_candidate_selection.py
+      hash: md5
+      md5: ff5a5238cf2bfdd6fbde042bfd1a2491
+      size: 10286
+    outs:
+    - path: data/models/v1/candidate_model.pkl
+      hash: md5
+      md5: 6ed4c5be368b7a70b7ebc7b5b451c2a0
+      size: 49066
+    - path: reports/models/candidate_selection_report.html
+      hash: md5
+      md5: 66ac10fa773cc67214314ccd31724a99
+      size: 4583
