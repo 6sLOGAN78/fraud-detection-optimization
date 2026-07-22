@@ -1973,3 +1973,39 @@ stages:
       hash: md5
       md5: 485d6dbf5821b868412666b1fcc90560
       size: 3690301
+  model_development:
+    cmd: python3 -m src.pipelines.run_model_training
+    deps:
+    - path: data/feature_store_engineered/v1/feature_registry.json
+      hash: md5
+      md5: 9e66e1a3e3871b114a3e5f05b0f4e531
+      size: 1047
+    - path: data/feature_store_engineered/v1/test_selected_features.parquet
+      hash: md5
+      md5: 8bf5116c03b2fe88dafa650282e12220
+      size: 3187999
+    - path: data/feature_store_engineered/v1/train_selected_features.parquet
+      hash: md5
+      md5: 485d6dbf5821b868412666b1fcc90560
+      size: 3690301
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/models/development.py
+      hash: md5
+      md5: de6b08a10155fdf6f0cca54aefd62b77
+      size: 8393
+    - path: src/pipelines/run_model_training.py
+      hash: md5
+      md5: bb0f816ee2caec1c0bfeb0918ae9abec
+      size: 11491
+    outs:
+    - path: data/models/v1/model_bundle.pkl
+      hash: md5
+      md5: fc1ad14c51b8f0e1537139255be7687d
+      size: 401469
+    - path: reports/models/model_development_report.html
+      hash: md5
+      md5: 95c9be14cefcc6d41b2cbbe113a3274b
+      size: 5673
