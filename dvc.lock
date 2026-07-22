@@ -1901,3 +1901,31 @@ stages:
       hash: md5
       md5: 6e98c084b4e354649398c07c47f0101a
       size: 2295
+  feature_governance:
+    cmd: python3 -m src.pipelines.run_feature_governance
+    deps:
+    - path: data/feature_store_engineered/v1/test_missing_features.parquet
+      hash: md5
+      md5: 7f717575a8c91807520fc457fa14a7b8
+      size: 22772730
+    - path: data/feature_store_engineered/v1/train_missing_features.parquet
+      hash: md5
+      md5: 01e67fac6b7c0038ffb1f804cf4d86d7
+      size: 29803200
+    - path: data/feature_store_foundation/registry.json
+      hash: md5
+      md5: ae4ae248d1b84d5504f08ccbbdf79b00
+      size: 1923
+    - path: src/data/governance.py
+      hash: md5
+      md5: 6d04ac4f89c035e80b6f13db334d8af6
+      size: 7276
+    - path: src/pipelines/run_feature_governance.py
+      hash: md5
+      md5: 3b163ff2bf3b41e774e7336ad88cbfad
+      size: 3099
+    outs:
+    - path: data/feature_store_foundation/feature_governance_report.json
+      hash: md5
+      md5: 13530c1ff5e41e6c4fa1cce48bfc6955
+      size: 2713
