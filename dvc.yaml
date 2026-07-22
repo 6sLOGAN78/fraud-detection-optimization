@@ -400,4 +400,25 @@ stages:
       - reports/eda/statistical_tests/statistical_tests_report.html
       - reports/eda/statistical_tests/plots/
 
+  drift_diagnostics:
+    cmd: python3 -m src.pipelines.run_drift_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_drift_analysis.py
+      - src/eda/drift.py
+    outs:
+      - reports/eda/drift/drift_feature_inventory.csv
+      - reports/eda/drift/drift_metadata.json
+      - reports/eda/drift/train_test_drift.csv
+      - reports/eda/drift/psi_analysis_summary.csv
+      - reports/eda/drift/ks_drift_analysis.csv
+      - reports/eda/drift/distribution_drift_analysis.csv
+      - reports/eda/drift/feature_stability_analysis.csv
+      - reports/eda/drift/drift_severity_report.csv
+      - reports/eda/drift/drift_root_cause_analysis.csv
+      - reports/eda/drift/drift_report.html
+      - reports/eda/drift/plots/
+
+
 

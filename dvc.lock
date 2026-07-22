@@ -1261,3 +1261,68 @@ stages:
       hash: md5
       md5: f0567603d0cf61c49036487a6929b6c5
       size: 22411
+  drift_diagnostics:
+    cmd: python3 -m src.pipelines.run_drift_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/drift.py
+      hash: md5
+      md5: bf87aaa4cde5787f7648126c72b8a43e
+      size: 36051
+    - path: src/pipelines/run_drift_analysis.py
+      hash: md5
+      md5: cd37e82f8ab0e4d8e8d79df696cc7993
+      size: 1611
+    outs:
+    - path: reports/eda/drift/distribution_drift_analysis.csv
+      hash: md5
+      md5: 25ba48a468ae800f7a36e54b5238bdfe
+      size: 884
+    - path: reports/eda/drift/drift_feature_inventory.csv
+      hash: md5
+      md5: 551b3ca2e94b83a56564b01b4453a874
+      size: 2046
+    - path: reports/eda/drift/drift_metadata.json
+      hash: md5
+      md5: ddf4931b91f9caa8aea9fdee2b0deacd
+      size: 185
+    - path: reports/eda/drift/drift_report.html
+      hash: md5
+      md5: fcf761e98dd0d09eca85e58b19257484
+      size: 23723
+    - path: reports/eda/drift/drift_root_cause_analysis.csv
+      hash: md5
+      md5: 9263c72c243b5105e0c93f7bcbe04971
+      size: 2749
+    - path: reports/eda/drift/drift_severity_report.csv
+      hash: md5
+      md5: e862f3bf213c0384a0e86c203bfe5eba
+      size: 1176
+    - path: reports/eda/drift/feature_stability_analysis.csv
+      hash: md5
+      md5: 2de7a749dacd82a043b3822861102ada
+      size: 1122
+    - path: reports/eda/drift/ks_drift_analysis.csv
+      hash: md5
+      md5: 44a227831c127cf2cf21f8022edf9b5f
+      size: 537
+    - path: reports/eda/drift/plots/
+      hash: md5
+      md5: e9a8c99d3d748ca2eca16e9de565a010.dir
+      size: 35944
+      nfiles: 2
+    - path: reports/eda/drift/psi_analysis_summary.csv
+      hash: md5
+      md5: 042c4f7375c29d57c60bc0e00851a9c4
+      size: 815
+    - path: reports/eda/drift/train_test_drift.csv
+      hash: md5
+      md5: 0c55a9fc00832a0cd27f8b117f4501f1
+      size: 1351
