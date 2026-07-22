@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector, FeatureSelectionValidator
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 
@@ -221,6 +221,48 @@ def test_feature_stability_selector() -> None:
     
     assert "feat_pred" in transformed_stability.columns
     assert "feat_noise" not in transformed_stability.columns
+
+
+def test_feature_selection_validator() -> None:
+    # 1. Empty features check
+    df_empty = pd.DataFrame()
+    validator = FeatureSelectionValidator()
+    with pytest.raises(ValueError, match="Quality Gate Failed: Selected features list lies empty"):
+        validator.fit(df_empty)
+
+    # 2. Duplicate columns check
+    df_dup = pd.DataFrame([[1, 2]], columns=["col1", "col1"])
+    with pytest.raises(ValueError, match="Quality Gate Failed: DataFrame contains duplicate columns"):
+        validator.fit(df_dup)
+
+    # 3. Variance check
+    df_no_var = pd.DataFrame({"feat_stable": [1.0, 2.0, 3.0], "feat_no_var": [0.0, 0.0, 0.0]})
+    with pytest.raises(ValueError, match="Quality Gate Failed: Feature 'feat_no_var' has near-zero/NaN variance"):
+        validator.fit(df_no_var)
+
+    # 4. Collinearity check
+    df_coll = pd.DataFrame({
+        "col1": [1.0, 2.0, 3.0],
+        "col2": [2.0, 4.0, 6.0]  # Perfectly collinear with col1
+    })
+    with pytest.raises(ValueError, match="Quality Gate Failed: High collinearity detected"):
+        validator.fit(df_coll)
+
+    # 5. Target alignment check
+    df_no_align = pd.DataFrame({
+        "feat_stable": [1.0, 0.0, 1.0, 0.0],
+        "feat_noise": [-1.0, 1.0, 1.0, -1.0]
+    })
+    y = pd.Series([1, 0, 1, 0])
+    with pytest.raises(ValueError, match="Quality Gate Failed: Feature 'feat_noise' has negligible target MI/corr alignment"):
+        validator.fit(df_no_align, y)
+
+    # 6. Valid pass check
+    df_valid = pd.DataFrame({
+        "feat_pred": [1.0, 0.0, 1.0, 0.0],
+        "feat_pred2": [0.1, 1.2, 0.9, 0.2]
+    })
+    validator.fit(df_valid, y)  # Should pass without error
 
 
 def test_selection_pipeline() -> None:

@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector, FeatureSelectionValidator
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -73,8 +73,10 @@ def main() -> None:
     stability_sel = FeatureStabilitySelector(threshold=0.05, random_state=42)
     # 12. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
     imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
+    # 13. Quality Validation Gate
+    validation_gate = FeatureSelectionValidator(random_state=42)
 
-    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, stability_sel, imp_sel])
+    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, sfs_sel, boruta_sel, sa_sel, stability_sel, imp_sel, validation_gate])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]

@@ -1060,6 +1060,93 @@ class FeatureStabilitySelector(BaseFeatureSelector):
         return X[cols]
 
 
+class FeatureSelectionValidator(BaseFeatureSelector):
+    """Ultimate pipeline quality gate performing strict assertions on the final feature subset."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        random_state: int = 42,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("FeatureSelectionValidator")
+        self.threshold = threshold
+        self.random_state = random_state
+        self.log_level = log_level
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> FeatureSelectionValidator:
+        logger.info("Executing ultimate Feature Selection Validation Gate checks...")
+        
+        # 1. Non-empty features assertion
+        if X.shape[1] == 0:
+            raise ValueError(f"[{self.name}] Quality Gate Failed: Selected features list lies empty.")
+
+        # 2. Schema / duplicate column names check
+        if len(set(X.columns)) != X.shape[1]:
+            raise ValueError(f"[{self.name}] Quality Gate Failed: DataFrame contains duplicate columns.")
+
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        
+        # 3. Variance check: ensure variance of each selected numeric feature > 1e-6
+        for col in numeric_cols:
+            var = float(X[col].var())
+            if np.isnan(var) or var < 1e-6:
+                raise ValueError(f"[{self.name}] Quality Gate Failed: Feature '{col}' has near-zero/NaN variance ({var:.8f} < 1e-6).")
+
+        # 4. Collinearity check: ensure no pairwise correlation is perfectly collinear (abs corr >= 0.999)
+        if len(numeric_cols) > 1:
+            corr_matrix = X[numeric_cols].corr().abs()
+            np.fill_diagonal(corr_matrix.values, 0.0)
+            max_corr = float(corr_matrix.max().max())
+            if max_corr >= 0.999:
+                # Find matching collinear pairs
+                collinear_pairs = []
+                for i in range(len(numeric_cols)):
+                    for j in range(i + 1, len(numeric_cols)):
+                        c_val = corr_matrix.iloc[i, j]
+                        if c_val >= 0.999:
+                            collinear_pairs.append((numeric_cols[i], numeric_cols[j], c_val))
+                raise ValueError(f"[{self.name}] Quality Gate Failed: High collinearity detected: {collinear_pairs}")
+
+        # 5. Target alignment check: if target y is provided, calculate mutual information and correlation
+        if y is not None:
+            # We enforce that all numeric features have a non-zero alignment (either MI or correlation)
+            from sklearn.feature_selection import mutual_info_classif
+            X_clean = X[numeric_cols].fillna(0.0)
+            y_aligned = pd.Series(y, index=X.index)
+            # Downsample to avoid slow mutual info calculation
+            if len(X_clean) > 5000:
+                rng = np.random.RandomState(self.random_state)
+                indices = rng.choice(X_clean.index, size=5000, replace=False)
+                X_sub = X_clean.loc[indices]
+                y_sub = y_aligned.loc[indices]
+            else:
+                X_sub = X_clean
+                y_sub = y_aligned
+                
+            mi_scores = mutual_info_classif(X_sub, y_sub, random_state=self.random_state)
+            for idx, col in enumerate(numeric_cols):
+                corr_val = 0.0
+                try:
+                    corr_val = abs(float(X_clean[col].corr(y_aligned)))
+                except Exception:
+                    pass
+                mi_score = float(mi_scores[idx])
+                if max(corr_val, mi_score) < 1e-4:
+                    raise ValueError(f"[{self.name}] Quality Gate Failed: Feature '{col}' has negligible target MI/corr alignment (corr={corr_val:.8f}, MI={mi_score:.8f} < 1e-4).")
+
+        # Set final selected/dropped tracking fields
+        self.selected_features_ = list(X.columns)
+        self.dropped_features_ = []
+
+        logger.info("%s: Feature validation checks and quality gates passed successfully.", self.name)
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
 
 
 
