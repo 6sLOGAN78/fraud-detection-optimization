@@ -1877,3 +1877,27 @@ stages:
       hash: md5
       md5: 3aaf9916fa35c530f5683f6fce54a140
       size: 1875
+  feature_documentation:
+    cmd: python3 -m src.pipelines.run_feature_documentation
+    deps:
+    - path: data/feature_store_foundation/registry.json
+      hash: md5
+      md5: 3aaf9916fa35c530f5683f6fce54a140
+      size: 1875
+    - path: src/data/documentation.py
+      hash: md5
+      md5: 5ba97c8bd7d25da38e99123ec27d1814
+      size: 6382
+    - path: src/pipelines/run_feature_documentation.py
+      hash: md5
+      md5: 04ac933a66bf789ea9625c07009c5cf2
+      size: 2531
+    outs:
+    - path: data/feature_store_foundation/feature_documentation.md
+      hash: md5
+      md5: a759ede6338286ae0fa46d01a942a871
+      size: 2309
+    - path: data/feature_store_foundation/feature_documentation_manifest.json
+      hash: md5
+      md5: 6e98c084b4e354649398c07c47f0101a
+      size: 2295
