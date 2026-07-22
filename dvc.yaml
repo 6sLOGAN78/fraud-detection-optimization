@@ -331,3 +331,26 @@ stages:
       - reports/eda/anonymous/anonymous_analysis.json
       - reports/eda/anonymous/anonymous_analysis_report.html
       - reports/eda/anonymous/plots/
+  correlation_analysis:
+    cmd: python3 -m src.pipelines.run_correlation_analysis
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_correlation_analysis.py
+      - src/eda/correlation.py
+    outs:
+      - reports/eda/correlation/correlation_feature_inventory.csv
+      - reports/eda/correlation/correlation_metadata.json
+      - reports/eda/correlation/pearson_correlation.csv
+      - reports/eda/correlation/spearman_correlation.csv
+      - reports/eda/correlation/kendall_correlation.csv
+      - reports/eda/correlation/correlation_matrix.csv
+      - reports/eda/correlation/feature_clusters.csv
+      - reports/eda/correlation/correlation_network.csv
+      - reports/eda/correlation/network_nodes.csv
+      - reports/eda/correlation/target_correlation.csv
+      - reports/eda/correlation/correlation_pruning.csv
+      - reports/eda/correlation/retained_features.csv
+      - reports/eda/correlation/removed_features.csv
+      - reports/eda/correlation/correlation_analysis_report.html
+      - reports/eda/correlation/plots/

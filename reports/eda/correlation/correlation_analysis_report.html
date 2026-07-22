@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IEEE-CIS CORRELATION DIAGNOSTICS</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #06070b;
+            --panel-bg: rgba(14, 16, 22, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-color: #8e97a4;
+            --text-white: #ffffff;
+            --accent-glow: #ffffff;
+            --alert-red: #ff3838;
+            --alert-green: #2ed573;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2.5rem;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--text-white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .status-pill {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--alert-green);
+            background-color: rgba(46, 213, 115, 0.1);
+            color: var(--alert-green);
+            border-radius: 4px;
+        }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hud-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px) saturate(120%);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .metric-val-red {
+            color: var(--alert-red);
+        }
+
+        .dashboard-body {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .visualizer-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .carousel-tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .carousel-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .carousel-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+        }
+
+        .carousel-tab.active {
+            background: #fff;
+            color: var(--bg-color);
+            border-color: #fff;
+        }
+
+        .carousel-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        .carousel-img {
+            max-width: 100%;
+            max-height: 380px;
+            height: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hud-table-wrapper {
+            overflow-x: auto;
+            max-height: 485px;
+        }
+
+        .hud-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+
+        .hud-table th {
+            font-family: 'Orbitron', sans-serif;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.7rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .hud-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .hud-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: #fff;
+        }
+
+        .secondary-panel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: var(--text-white);
+            margin-bottom: 1.25rem;
+            border-left: 3px solid var(--text-white);
+            padding-left: 0.75rem;
+        }
+    </style>
+    <script>
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.carousel-tab');
+            const img = document.getElementById('carousel-img');
+            const images = [
+                'plots/pearson_heatmap.png',
+                'plots/spearman_heatmap.png',
+                'plots/dendrogram.png',
+                'plots/target_mutual_info.png'
+            ];
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabs[index].classList.add('active');
+            img.src = images[index];
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>IEEE-CIS CORRELATION DIAGNOSTICS</h1>
+            <p style="font-size: 0.65rem; color: var(--text-color); margin-top: 0.25rem; letter-spacing: 1px;">STAGE 3.12: SYSTEM CORRELATION PROPERTIES</p>
+        </div>
+        <div class="status-pill">CORRELATION ANALYZER OK</div>
+    </header>
+
+    <div class="hud-grid">
+        <div class="hud-panel">
+            <p class="metric-label">Analyzed Features</p>
+            <p class="metric-value">418</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Top Target Predictor (MI)</p>
+            <p class="metric-value">V258</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Redundant Features Removed</p>
+            <p class="metric-value metric-val-red">31</p>
+        </div>
+        <div class="hud-panel">
+            <p class="metric-label">Correlation network Hubs</p>
+            <p class="metric-value">32</p>
+        </div>
+    </div>
+
+    <div class="dashboard-body">
+        <div class="hud-panel visualizer-card">
+            <h2>DIAGNOSTIC VISUALIZATIONS</h2>
+            <div class="carousel-tabs">
+                <button class="carousel-tab active" onclick="switchTab(0)">Pearson Linear</button>
+                <button class="carousel-tab" onclick="switchTab(1)">Spearman Rank</button>
+                <button class="carousel-tab" onclick="switchTab(2)">Dendrogram Map</button>
+                <button class="carousel-tab" onclick="switchTab(3)">Target Mutual Info</button>
+            </div>
+            <div class="carousel-content">
+                <img id="carousel-img" class="carousel-img" src="plots/pearson_heatmap.png" alt="Correlation Map">
+            </div>
+        </div>
+
+        <div class="hud-panel">
+            <h2>MUTUAL INFORMATION & TARGET CORRELATION</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>feature_name</th>
+      <th>pearson_correlation</th>
+      <th>spearman_correlation</th>
+      <th>point_biserial_correlation</th>
+      <th>mutual_information</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V258</td>
+      <td>0.267780</td>
+      <td>0.382267</td>
+      <td>0.267780</td>
+      <td>0.031566</td>
+    </tr>
+    <tr>
+      <td>V244</td>
+      <td>0.369895</td>
+      <td>0.428848</td>
+      <td>0.369895</td>
+      <td>0.025171</td>
+    </tr>
+    <tr>
+      <td>V243</td>
+      <td>0.162230</td>
+      <td>0.389142</td>
+      <td>0.162230</td>
+      <td>0.025101</td>
+    </tr>
+    <tr>
+      <td>V257</td>
+      <td>0.366450</td>
+      <td>0.399879</td>
+      <td>0.366450</td>
+      <td>0.024860</td>
+    </tr>
+    <tr>
+      <td>V246</td>
+      <td>0.323631</td>
+      <td>0.411091</td>
+      <td>0.323631</td>
+      <td>0.024676</td>
+    </tr>
+    <tr>
+      <td>V200</td>
+      <td>0.292533</td>
+      <td>0.261493</td>
+      <td>0.292533</td>
+      <td>0.023917</td>
+    </tr>
+    <tr>
+      <td>C4</td>
+      <td>0.062884</td>
+      <td>0.159833</td>
+      <td>0.062884</td>
+      <td>0.021550</td>
+    </tr>
+    <tr>
+      <td>V222</td>
+      <td>0.257440</td>
+      <td>0.090436</td>
+      <td>0.257440</td>
+      <td>0.019803</td>
+    </tr>
+    <tr>
+      <td>V199</td>
+      <td>0.235009</td>
+      <td>0.339985</td>
+      <td>0.235009</td>
+      <td>0.019033</td>
+    </tr>
+    <tr>
+      <td>V259</td>
+      <td>0.250267</td>
+      <td>0.089673</td>
+      <td>0.250267</td>
+      <td>0.018976</td>
+    </tr>
+    <tr>
+      <td>V187</td>
+      <td>0.031661</td>
+      <td>0.381894</td>
+      <td>0.031661</td>
+      <td>0.018963</td>
+    </tr>
+    <tr>
+      <td>V242</td>
+      <td>0.364782</td>
+      <td>0.410923</td>
+      <td>0.364782</td>
+      <td>0.018962</td>
+    </tr>
+    <tr>
+      <td>V263</td>
+      <td>0.021310</td>
+      <td>0.269766</td>
+      <td>0.021310</td>
+      <td>0.018059</td>
+    </tr>
+    <tr>
+      <td>V86</td>
+      <td>0.259789</td>
+      <td>0.179190</td>
+      <td>0.259789</td>
+      <td>0.018019</td>
+    </tr>
+    <tr>
+      <td>C8</td>
+      <td>0.069551</td>
+      <td>0.153882</td>
+      <td>0.069551</td>
+      <td>0.017871</td>
+    </tr>
+    <tr>
+      <td>V218</td>
+      <td>0.045768</td>
+      <td>0.270562</td>
+      <td>0.045768</td>
+      <td>0.017737</td>
+    </tr>
+    <tr>
+      <td>V45</td>
+      <td>0.288723</td>
+      <td>0.194863</td>
+      <td>0.288723</td>
+      <td>0.017703</td>
+    </tr>
+    <tr>
+      <td>V170</td>
+      <td>0.245756</td>
+      <td>0.191253</td>
+      <td>0.245756</td>
+      <td>0.017701</td>
+    </tr>
+    <tr>
+      <td>V188</td>
+      <td>0.320097</td>
+      <td>0.225496</td>
+      <td>0.320097</td>
+      <td>0.017593</td>
+    </tr>
+    <tr>
+      <td>V189</td>
+      <td>0.317597</td>
+      <td>0.244104</td>
+      <td>0.317597</td>
+      <td>0.017376</td>
+    </tr>
+    <tr>
+      <td>V84</td>
+      <td>0.159196</td>
+      <td>0.156730</td>
+      <td>0.159196</td>
+      <td>0.017091</td>
+    </tr>
+    <tr>
+      <td>id_17</td>
+      <td>0.131819</td>
+      <td>0.134584</td>
+      <td>0.131819</td>
+      <td>0.016975</td>
+    </tr>
+    <tr>
+      <td>V178</td>
+      <td>-0.013104</td>
+      <td>0.251093</td>
+      <td>-0.013104</td>
+      <td>0.016815</td>
+    </tr>
+    <tr>
+      <td>V179</td>
+      <td>-0.012773</td>
+      <td>0.243499</td>
+      <td>-0.012773</td>
+      <td>0.016566</td>
+    </tr>
+    <tr>
+      <td>V230</td>
+      <td>0.190920</td>
+      <td>0.273315</td>
+      <td>0.190920</td>
+      <td>0.016311</td>
+    </tr>
+    <tr>
+      <td>V264</td>
+      <td>0.008236</td>
+      <td>0.267508</td>
+      <td>0.008236</td>
+      <td>0.016251</td>
+    </tr>
+    <tr>
+      <td>V87</td>
+      <td>0.265665</td>
+      <td>0.169032</td>
+      <td>0.265665</td>
+      <td>0.016141</td>
+    </tr>
+    <tr>
+      <td>V40</td>
+      <td>0.227313</td>
+      <td>0.178894</td>
+      <td>0.227313</td>
+      <td>0.016037</td>
+    </tr>
+    <tr>
+      <td>V192</td>
+      <td>0.025845</td>
+      <td>0.215369</td>
+      <td>0.025845</td>
+      <td>0.016012</td>
+    </tr>
+    <tr>
+      <td>V233</td>
+      <td>0.049167</td>
+      <td>0.316908</td>
+      <td>0.049167</td>
+      <td>0.015863</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+    </div>
+
+    <div class="secondary-panel-grid">
+        <div class="hud-panel">
+            <h2>REDUNDANCY PRUNING DECISIONS (THRESHOLD: 0.90)</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>feature_1</th>
+      <th>feature_2</th>
+      <th>correlation</th>
+      <th>decision</th>
+      <th>reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V160</td>
+      <td>V150</td>
+      <td>0.9461</td>
+      <td>Retain V150, Remove V160</td>
+      <td>MI: V150(0.0000) &gt; V160(0.0034)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V333</td>
+      <td>0.9943</td>
+      <td>Retain V332, Remove V333</td>
+      <td>MI: V332(0.0019) &gt; V333(0.0000)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V212</td>
+      <td>0.9676</td>
+      <td>Retain V212, Remove V332</td>
+      <td>MI: V212(0.0019) &gt; V332(0.0132)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V204</td>
+      <td>0.9568</td>
+      <td>Retain V204, Remove V332</td>
+      <td>MI: V204(0.0019) &gt; V332(0.0082)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V331</td>
+      <td>0.9144</td>
+      <td>Retain V332, Remove V331</td>
+      <td>MI: V332(0.0019) &gt; V331(0.0000)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V164</td>
+      <td>0.9016</td>
+      <td>Retain V164, Remove V332</td>
+      <td>MI: V164(0.0019) &gt; V332(0.0051)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V213</td>
+      <td>0.9846</td>
+      <td>Retain V213, Remove V332</td>
+      <td>MI: V213(0.0019) &gt; V332(0.0124)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V202</td>
+      <td>0.9085</td>
+      <td>Retain V202, Remove V332</td>
+      <td>MI: V202(0.0019) &gt; V332(0.0104)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V307</td>
+      <td>0.9981</td>
+      <td>Retain V307, Remove V332</td>
+      <td>MI: V307(0.0019) &gt; V332(0.0033)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V127</td>
+      <td>0.9986</td>
+      <td>Retain V332, Remove V127</td>
+      <td>MI: V332(0.0019) &gt; V127(0.0000)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V211</td>
+      <td>0.9087</td>
+      <td>Retain V211, Remove V332</td>
+      <td>MI: V211(0.0019) &gt; V332(0.0085)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V317</td>
+      <td>0.9979</td>
+      <td>Retain V317, Remove V332</td>
+      <td>MI: V317(0.0019) &gt; V332(0.0052)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V133</td>
+      <td>0.9980</td>
+      <td>Retain V133, Remove V332</td>
+      <td>MI: V133(0.0019) &gt; V332(0.0037)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V308</td>
+      <td>0.9925</td>
+      <td>Retain V308, Remove V332</td>
+      <td>MI: V308(0.0019) &gt; V332(0.0043)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V128</td>
+      <td>0.9929</td>
+      <td>Retain V128, Remove V332</td>
+      <td>MI: V128(0.0019) &gt; V332(0.0047)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V318</td>
+      <td>0.9953</td>
+      <td>Retain V318, Remove V332</td>
+      <td>MI: V318(0.0019) &gt; V332(0.0070)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V134</td>
+      <td>0.9953</td>
+      <td>Retain V134, Remove V332</td>
+      <td>MI: V134(0.0019) &gt; V332(0.0062)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V306</td>
+      <td>0.9133</td>
+      <td>Retain V332, Remove V306</td>
+      <td>MI: V332(0.0019) &gt; V306(0.0007)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V126</td>
+      <td>0.9142</td>
+      <td>Retain V126, Remove V332</td>
+      <td>MI: V126(0.0019) &gt; V332(0.0057)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V316</td>
+      <td>0.9112</td>
+      <td>Retain V332, Remove V316</td>
+      <td>MI: V332(0.0019) &gt; V316(0.0000)</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>V132</td>
+      <td>0.9112</td>
+      <td>Retain V132, Remove V332</td>
+      <td>MI: V132(0.0019) &gt; V332(0.0023)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V212</td>
+      <td>0.9682</td>
+      <td>Retain V203, Remove V212</td>
+      <td>MI: V203(0.0139) &gt; V212(0.0132)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V204</td>
+      <td>0.9682</td>
+      <td>Retain V203, Remove V204</td>
+      <td>MI: V203(0.0139) &gt; V204(0.0082)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V213</td>
+      <td>0.9313</td>
+      <td>Retain V203, Remove V213</td>
+      <td>MI: V203(0.0139) &gt; V213(0.0124)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V264</td>
+      <td>0.9837</td>
+      <td>Retain V264, Remove V203</td>
+      <td>MI: V264(0.0139) &gt; V203(0.0163)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V265</td>
+      <td>0.9785</td>
+      <td>Retain V203, Remove V265</td>
+      <td>MI: V203(0.0139) &gt; V265(0.0127)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V274</td>
+      <td>0.9299</td>
+      <td>Retain V203, Remove V274</td>
+      <td>MI: V203(0.0139) &gt; V274(0.0113)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V275</td>
+      <td>0.9302</td>
+      <td>Retain V203, Remove V275</td>
+      <td>MI: V203(0.0139) &gt; V275(0.0111)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V263</td>
+      <td>0.9350</td>
+      <td>Retain V263, Remove V203</td>
+      <td>MI: V263(0.0139) &gt; V203(0.0181)</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>V273</td>
+      <td>0.9059</td>
+      <td>Retain V203, Remove V273</td>
+      <td>MI: V203(0.0139) &gt; V273(0.0104)</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        <div class="hud-panel">
+            <h2>NETWORK NODES DEGREES</h2>
+            <div class="hud-table-wrapper">
+                <table class="dataframe hud-table">
+  <thead>
+    <tr style="text-align: left;">
+      <th>feature_name</th>
+      <th>degree</th>
+      <th>is_hub</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V213</td>
+      <td>29</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V204</td>
+      <td>28</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V212</td>
+      <td>27</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V211</td>
+      <td>26</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V202</td>
+      <td>26</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V128</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V134</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V308</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V127</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V307</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V133</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V332</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V333</td>
+      <td>25</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V317</td>
+      <td>24</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V318</td>
+      <td>24</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V273</td>
+      <td>23</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V331</td>
+      <td>22</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V132</td>
+      <td>22</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V126</td>
+      <td>22</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V306</td>
+      <td>22</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V316</td>
+      <td>21</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V164</td>
+      <td>20</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V263</td>
+      <td>20</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V203</td>
+      <td>19</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V338</td>
+      <td>12</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V165</td>
+      <td>11</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V275</td>
+      <td>10</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V274</td>
+      <td>9</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V265</td>
+      <td>8</td>
+      <td>YES</td>
+    </tr>
+    <tr>
+      <td>V264</td>
+      <td>7</td>
+      <td>YES</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

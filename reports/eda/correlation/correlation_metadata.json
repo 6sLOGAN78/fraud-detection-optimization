@@ -1,0 +1,8 @@
+{
+    "total_correlation_features": 418,
+    "feature_type_counts": {
+        "Float": 416,
+        "Integer": 2
+    },
+    "avg_missing_percentage": 44.8624
+}

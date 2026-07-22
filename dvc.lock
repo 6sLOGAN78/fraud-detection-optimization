@@ -1029,3 +1029,84 @@ stages:
       hash: md5
       md5: a3e61fa8de9f5022f9e520184eaeb06e
       size: 32879
+  correlation_analysis:
+    cmd: python3 -m src.pipelines.run_correlation_analysis
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/correlation.py
+      hash: md5
+      md5: b26640b6bc571d7fe0439dcd51928b2a
+      size: 32288
+    - path: src/pipelines/run_correlation_analysis.py
+      hash: md5
+      md5: 57d1c013beb5a57852bde07b10f8a780
+      size: 2286
+    outs:
+    - path: reports/eda/correlation/correlation_analysis_report.html
+      hash: md5
+      md5: 38b22134b3e65022b89232b5da1eae96
+      size: 22016
+    - path: reports/eda/correlation/correlation_feature_inventory.csv
+      hash: md5
+      md5: 927ebdc267d5e773162425d27731ad77
+      size: 9965
+    - path: reports/eda/correlation/correlation_matrix.csv
+      hash: md5
+      md5: ff32271673c4aa87e4fdf49c1e639d09
+      size: 31027
+    - path: reports/eda/correlation/correlation_metadata.json
+      hash: md5
+      md5: e2610206af217b70c6db1b7fbfe00d2b
+      size: 159
+    - path: reports/eda/correlation/correlation_network.csv
+      hash: md5
+      md5: 31d408147151d0fbb4a0f990c0379d5c
+      size: 5478
+    - path: reports/eda/correlation/correlation_pruning.csv
+      hash: md5
+      md5: 9c83d5e1f8ef585c25a3eddfd9e51fec
+      size: 15652
+    - path: reports/eda/correlation/feature_clusters.csv
+      hash: md5
+      md5: 3ca238ec3cbe8cef16c3fe942e1245b4
+      size: 313
+    - path: reports/eda/correlation/kendall_correlation.csv
+      hash: md5
+      md5: 4973778287b61870dd5da5cb0b141eef
+      size: 1322
+    - path: reports/eda/correlation/network_nodes.csv
+      hash: md5
+      md5: 54959d7fb346084580e4ccd2241da1e5
+      size: 488
+    - path: reports/eda/correlation/pearson_correlation.csv
+      hash: md5
+      md5: 985d5f51bac5ac4a4cd0937a7f239ff1
+      size: 21926
+    - path: reports/eda/correlation/plots/
+      hash: md5
+      md5: 1bf3882663e2745c0f1769977a1f03ed.dir
+      size: 114289
+      nfiles: 4
+    - path: reports/eda/correlation/removed_features.csv
+      hash: md5
+      md5: 4582270fbc3ad072adf95f551aa17edc
+      size: 168
+    - path: reports/eda/correlation/retained_features.csv
+      hash: md5
+      md5: 05035150dd31e178754f79911946517a
+      size: 60
+    - path: reports/eda/correlation/spearman_correlation.csv
+      hash: md5
+      md5: 5e9e36a8c6c60ec8fa0327df9b020309
+      size: 21824
+    - path: reports/eda/correlation/target_correlation.csv
+      hash: md5
+      md5: 1e2eb415920ddaebfe95fc24fdc8e4b3
+      size: 16903
