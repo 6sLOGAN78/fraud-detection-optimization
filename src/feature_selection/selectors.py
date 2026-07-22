@@ -108,8 +108,16 @@ class CorrelationSelector(BaseFeatureSelector):
             self.dropped_features_ = []
             return self
 
+        # Downsample to avoid OOM or high CPU bottlenecks during large correlation calculations
+        if len(X) > 50000:
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=50000, replace=False)
+            X_sub = X.loc[indices, numeric_cols]
+        else:
+            X_sub = X[numeric_cols]
+
         # Calculate absolute correlation matrix
-        corr_matrix = X[numeric_cols].corr().abs()
+        corr_matrix = X_sub.corr().abs()
         
         # Find upper triangle to avoid double checking pairs
         upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))

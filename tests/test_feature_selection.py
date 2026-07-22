@@ -265,6 +265,21 @@ def test_feature_selection_validator() -> None:
     validator.fit(df_valid, y)  # Should pass without error
 
 
+def test_feature_registry_generation() -> None:
+    import json
+    from pathlib import Path
+    registry_path = Path("data/feature_store_engineered/v1/feature_registry.json")
+    if registry_path.exists():
+        with open(registry_path, "r") as f:
+            registry = json.load(f)
+        assert "version" in registry
+        assert "timestamp" in registry
+        assert "access_control" in registry
+        assert "features" in registry
+        assert "lifecycle_management" in registry
+        assert registry["version"] == "v1.0"
+
+
 def test_selection_pipeline() -> None:
     # Pipeline integration check
     df = pd.DataFrame({

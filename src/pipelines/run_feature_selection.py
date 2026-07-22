@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 import mlflow
 
 from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector, SequentialSelector, BorutaSelector, SimulatedAnnealingSelector, FeatureStabilitySelector, FeatureSelectionValidator
@@ -80,7 +81,19 @@ def main() -> None:
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
-    pipeline.fit(df_train_features, y_train)
+    
+    # Downsample to 100,000 samples for selector fitting to avoid system OOM
+    if len(df_train_features) > 100000:
+        logger.info("Downsampling training data to 100,000 samples for pipeline fit...")
+        rng = np.random.RandomState(42)
+        fit_indices = rng.choice(df_train_features.index, size=100000, replace=False)
+        df_fit_features = df_train_features.loc[fit_indices]
+        y_fit = y_train.loc[fit_indices]
+    else:
+        df_fit_features = df_train_features
+        y_fit = y_train
+
+    pipeline.fit(df_fit_features, y_fit)
 
     selected_cols = pipeline.selected_features_
     summary_report = pipeline.get_summary_report()
@@ -117,6 +130,48 @@ def main() -> None:
     del df_test_selected
     gc.collect()
 
+    # Generate Feature Registry JSON Standard
+    from datetime import datetime
+    import subprocess
+    import pyarrow.parquet as pq
+
+    try:
+        commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()
+    except Exception:
+        commit_hash = "unknown"
+
+    registry = {
+        "version": "v1.0",
+        "timestamp": datetime.now().isoformat(),
+        "access_control": {
+            "read_roles": ["data_scientists", "ml_engineers", "training_pipelines"],
+            "write_roles": ["feature_engineering_pipeline"],
+            "usage_guidelines": "Pruned, validated feature subset approved for model training and real-time inference."
+        },
+        "lifecycle_management": {
+            "stage": "production",
+            "updated_by": "run_feature_selection",
+            "git_commit": commit_hash
+        },
+        "features": {}
+    }
+
+    schema = pq.read_schema(train_out)
+    for col in selected_cols:
+        col_type = str(schema.field(col).type)
+        stability_score = float(stability_sel.stability_scores_.get(col, 1.0))
+        registry["features"][col] = {
+            "data_type": col_type,
+            "stability_score": stability_score,
+            "selection_status": "selected",
+            "lifecycle_stage": "production"
+        }
+
+    registry_out = output_dir / "feature_registry.json"
+    with open(registry_out, "w") as f:
+        json.dump(registry, f, indent=4)
+    logger.info("Final Feature Registry JSON saved to: %s", registry_out)
+
     # MLflow Tracking
     logger.info("Logging feature selection parameters & summaries to MLflow...")
     active = mlflow.active_run()
@@ -150,6 +205,7 @@ def main() -> None:
             
         # Log artifacts
         mlflow.log_artifact(str(report_out), artifact_path="feature_selection")
+        mlflow.log_artifact(str(registry_out), artifact_path="feature_selection")
     except Exception as e:
         logger.warning("MLflow tracking logging encountered warning: %s", e)
     finally:
