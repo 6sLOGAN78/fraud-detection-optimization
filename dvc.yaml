@@ -420,5 +420,29 @@ stages:
       - reports/eda/drift/drift_report.html
       - reports/eda/drift/plots/
 
+  leakage_detection:
+    cmd: python3 -m src.pipelines.run_leakage_detection
+    deps:
+      - data/interim/train_merged.parquet
+      - data/interim/test_merged.parquet
+      - src/pipelines/run_leakage_detection.py
+      - src/eda/leakage.py
+    outs:
+      - reports/eda/leakage/leakage_feature_inventory.csv
+      - reports/eda/leakage/leakage_metadata.json
+      - reports/eda/leakage/high_target_correlation.csv
+      - reports/eda/leakage/target_leakage_analysis.csv
+      - reports/eda/leakage/future_leakage_analysis.csv
+      - reports/eda/leakage/duplicate_leakage.csv
+      - reports/eda/leakage/train_test_contamination.csv
+      - reports/eda/leakage/feature_engineering_leakage.csv
+      - reports/eda/leakage/encoding_leakage.csv
+      - reports/eda/leakage/aggregation_leakage.csv
+      - reports/eda/leakage/transformation_leakage.csv
+      - reports/eda/leakage/leakage_severity_report.csv
+      - reports/eda/leakage/leakage_report.html
+      - reports/eda/leakage/plots/
+
+
 
 

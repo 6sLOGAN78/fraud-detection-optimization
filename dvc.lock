@@ -1326,3 +1326,80 @@ stages:
       hash: md5
       md5: 0c55a9fc00832a0cd27f8b117f4501f1
       size: 1351
+  leakage_detection:
+    cmd: python3 -m src.pipelines.run_leakage_detection
+    deps:
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/eda/leakage.py
+      hash: md5
+      md5: a56318c327119b977c477150437e8c48
+      size: 33626
+    - path: src/pipelines/run_leakage_detection.py
+      hash: md5
+      md5: 4dfa8be4562013e91265be67eaefd89f
+      size: 1664
+    outs:
+    - path: reports/eda/leakage/aggregation_leakage.csv
+      hash: md5
+      md5: 33f6d57519c8de386fcce66c94273963
+      size: 251
+    - path: reports/eda/leakage/duplicate_leakage.csv
+      hash: md5
+      md5: e90c81e7a8b6ab8a7c3ed392d1288514
+      size: 234
+    - path: reports/eda/leakage/encoding_leakage.csv
+      hash: md5
+      md5: 41bfc76552be63589d6fb85c09e994a6
+      size: 167
+    - path: reports/eda/leakage/feature_engineering_leakage.csv
+      hash: md5
+      md5: 2a1cdbefdaa56f07b2438ac50001d3bb
+      size: 465
+    - path: reports/eda/leakage/future_leakage_analysis.csv
+      hash: md5
+      md5: 0f777bd4e4691dd9b5a8391fab5c08ed
+      size: 555
+    - path: reports/eda/leakage/high_target_correlation.csv
+      hash: md5
+      md5: a1560ed2c1da0e7f190118260810b3ae
+      size: 1178
+    - path: reports/eda/leakage/leakage_feature_inventory.csv
+      hash: md5
+      md5: 34d3cafbff0216f512d643531c6859f8
+      size: 2643
+    - path: reports/eda/leakage/leakage_metadata.json
+      hash: md5
+      md5: 068cfb0a31538dca4e55c878d5fe07cb
+      size: 138
+    - path: reports/eda/leakage/leakage_report.html
+      hash: md5
+      md5: fbd029164652f794acd2450dc64c095e
+      size: 17645
+    - path: reports/eda/leakage/leakage_severity_report.csv
+      hash: md5
+      md5: a9f91404f94584ceacf5f8f21f4aa507
+      size: 1695
+    - path: reports/eda/leakage/plots/
+      hash: md5
+      md5: 93b1e09456483a8ff0d70f153b1c0665.dir
+      size: 17820
+      nfiles: 1
+    - path: reports/eda/leakage/target_leakage_analysis.csv
+      hash: md5
+      md5: 75d23c9f024a6fcd9043a0e4235e1813
+      size: 1374
+    - path: reports/eda/leakage/train_test_contamination.csv
+      hash: md5
+      md5: 61c3a3229f5e242656713d9bdff20518
+      size: 345
+    - path: reports/eda/leakage/transformation_leakage.csv
+      hash: md5
+      md5: d75977bbeebdf32cb3d8eefb6aded9d8
+      size: 836
