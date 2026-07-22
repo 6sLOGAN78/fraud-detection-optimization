@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 
@@ -121,6 +121,26 @@ def test_permutation_importance_selector() -> None:
     
     assert "feat_pred" in transformed_pi.columns
     assert "feat_noise" not in transformed_pi.columns
+
+
+def test_rfe_selector() -> None:
+    # Set up mock dataframe with predictive feature and noise feature
+    rng = np.random.RandomState(42)
+    feat_pred = rng.normal(0, 1, 100)
+    y = pd.Series((feat_pred > 0.05).astype(int))
+    
+    # Predictor tracks y very well, noise is pure random
+    df = pd.DataFrame({
+        "feat_pred": feat_pred + y * 0.5,
+        "feat_noise": rng.normal(0, 10, 100),
+    })
+
+    # Test RFESelector (threshold=0.60 ensures rank 2 score 0.50 gets dropped)
+    rfe_s = RFESelector(threshold=0.60, random_state=42)
+    transformed_rfe = rfe_s.fit_transform(df, y)
+    
+    assert "feat_pred" in transformed_rfe.columns
+    assert "feat_noise" not in transformed_rfe.columns
 
 
 def test_selection_pipeline() -> None:

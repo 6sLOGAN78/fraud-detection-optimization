@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import mlflow
 
-from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector
+from src.feature_selection.selectors import NullSelector, VarianceSelector, CorrelationSelector, ImportanceSelector, MutualInformationSelector, SHAPSelector, PermutationImportanceSelector, RFESelector
 from src.feature_selection.pipeline import FeatureSelectionPipeline
 
 logging.basicConfig(level=logging.INFO)
@@ -61,10 +61,12 @@ def main() -> None:
     shap_sel = SHAPSelector(threshold=0.05, random_state=42)
     # 6. Permutation Importance Filter (max normalized Permutation score threshold=0.05)
     perm_sel = PermutationImportanceSelector(threshold=0.05, random_state=42)
-    # 7. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
+    # 7. Recursive Feature Elimination Filter (top recursive features threshold=0.05)
+    rfe_sel = RFESelector(threshold=0.05, random_state=42)
+    # 8. Importance Filter (RandomForest baseline max normalized score threshold=0.05)
     imp_sel = ImportanceSelector(threshold=0.05, random_state=42)
 
-    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, imp_sel])
+    pipeline = FeatureSelectionPipeline([null_sel, var_sel, corr_sel, mi_sel, shap_sel, perm_sel, rfe_sel, imp_sel])
 
     logger.info("Fitting feature selectors sequentially on training data...")
     df_train_features = df_train[features_to_select]
@@ -122,6 +124,7 @@ def main() -> None:
             "mutual_info_threshold": 0.05,
             "shap_threshold": 0.05,
             "permutation_importance_threshold": 0.05,
+            "rfe_threshold": 0.05,
             "importance_threshold": 0.05,
             "initial_features_count": summary_report["total_initial_features"],
             "selected_features_count": summary_report["total_final_features"],
