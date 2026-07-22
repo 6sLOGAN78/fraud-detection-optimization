@@ -1619,3 +1619,47 @@ stages:
       hash: md5
       md5: fa56c3c27c20f2ce38995c6b44936b07
       size: 37126535
+  feature_ratio:
+    cmd: python3 -m src.pipelines.run_feature_ratio
+    deps:
+    - path: data/feature_store_engineered/v1/test_aggregated_features.parquet
+      hash: md5
+      md5: 49152b1f9864353fdd6c93eefbbd5c8c
+      size: 31664604
+    - path: data/feature_store_engineered/v1/train_aggregated_features.parquet
+      hash: md5
+      md5: fa56c3c27c20f2ce38995c6b44936b07
+      size: 37126535
+    - path: data/interim/test_merged.parquet
+      hash: md5
+      md5: c02d841e0f46db4aeb580893b5724c1c
+      size: 70087336
+    - path: data/interim/train_merged.parquet
+      hash: md5
+      md5: b8fbac7935f8290c9a9977c05ecb6f9a
+      size: 80437250
+    - path: src/feature_engineering/ratios.py
+      hash: md5
+      md5: 22a0be490c9caab0e306507a07fb30dc
+      size: 5002
+    - path: src/pipelines/run_feature_ratio.py
+      hash: md5
+      md5: cb497d0e2298950de23f077361db4503
+      size: 4610
+    outs:
+    - path: data/feature_store_engineered/v1/ratio_catalog.csv
+      hash: md5
+      md5: 7f5d3b2eb4528b5843681b013ca9c89d
+      size: 2971
+    - path: data/feature_store_engineered/v1/ratio_pipeline_manifest.json
+      hash: md5
+      md5: b0ab13f92a0a663592a807880739149c
+      size: 7404
+    - path: data/feature_store_engineered/v1/test_ratio_features.parquet
+      hash: md5
+      md5: dbc9fd2bb94cd50b642c7a409b715817
+      size: 50353422
+    - path: data/feature_store_engineered/v1/train_ratio_features.parquet
+      hash: md5
+      md5: 1aacb77cc66521f46809d782bb866705
+      size: 61549074
