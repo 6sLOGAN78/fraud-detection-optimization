@@ -589,6 +589,55 @@ stages:
       - data/feature_store_engineered/v1/train_validation_report.json
       - data/feature_store_engineered/v1/test_validation_report.json
 
+  feature_store:
+    cmd: python3 -m src.pipelines.run_feature_store
+    deps:
+      - data/feature_store_engineered/v1/train_missing_features.parquet
+      - data/feature_store_engineered/v1/test_missing_features.parquet
+      - src/pipelines/run_feature_store.py
+      - src/data/store.py
+    outs:
+      - data/feature_store_foundation/registry.json
+      - data/feature_store_foundation/online.db
+      - data/feature_store_foundation/offline/missingness_train_features/v1/features.parquet
+      - data/feature_store_foundation/offline/missingness_test_features/v1/features.parquet
+
+  feature_documentation:
+    cmd: python3 -m src.pipelines.run_feature_documentation
+    deps:
+      - data/feature_store_foundation/registry.json
+      - src/pipelines/run_feature_documentation.py
+      - src/data/documentation.py
+    outs:
+      - data/feature_store_foundation/feature_documentation.md
+      - data/feature_store_foundation/feature_documentation_manifest.json
+
+  feature_governance:
+    cmd: python3 -m src.pipelines.run_feature_governance
+    deps:
+      - data/feature_store_foundation/registry.json
+      - data/feature_store_engineered/v1/train_missing_features.parquet
+      - data/feature_store_engineered/v1/test_missing_features.parquet
+      - src/pipelines/run_feature_governance.py
+      - src/data/governance.py
+    outs:
+      - data/feature_store_foundation/feature_governance_report.json
+
+  feature_selection:
+    cmd: python3 -m src.pipelines.run_feature_selection
+    deps:
+      - data/feature_store_engineered/v1/train_missing_features.parquet
+      - data/feature_store_engineered/v1/test_missing_features.parquet
+      - data/interim/train_merged.parquet
+      - src/pipelines/run_feature_selection.py
+      - src/feature_selection/base.py
+      - src/feature_selection/selectors.py
+      - src/feature_selection/pipeline.py
+    outs:
+      - data/feature_store_engineered/v1/train_selected_features.parquet
+      - data/feature_store_engineered/v1/test_selected_features.parquet
+      - data/feature_store_engineered/v1/feature_selection_report.json
+
 
 
 
