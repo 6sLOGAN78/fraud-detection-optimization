@@ -704,6 +704,118 @@ class SequentialSelector(BaseFeatureSelector):
         return X[cols]
 
 
+class BorutaSelector(BaseFeatureSelector):
+    """Filters features using a custom vectorized Boruta shadow permuted feature importance algorithm."""
+    def __init__(
+        self,
+        threshold: float = 0.05,
+        n_iterations: int = 5,
+        random_state: int = 42,
+        n_jobs: int = -1,
+        log_level: str = "INFO"
+    ) -> None:
+        super().__init__("BorutaSelector")
+        self.threshold = threshold
+        self.n_iterations = n_iterations
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+        self.log_level = log_level
+        self.boruta_scores_: dict[str, float] = {}
+
+    def fit(self, X: pd.DataFrame, y: pd.Series | None = None) -> BorutaSelector:
+        logger.info("Executing %s fit verification gate...", self.name)
+        if y is None:
+            logger.warning("%s requires target labels y for shadow scoring. Retaining all.", self.name)
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Numeric columns selection
+        numeric_cols = list(X.select_dtypes(include=[np.number]).columns)
+        if not numeric_cols:
+            self.selected_features_ = list(X.columns)
+            self.dropped_features_ = []
+            return self
+
+        # Downsample to avoid memory and execution stalling
+        max_samples = 5000
+        if len(X) > max_samples:
+            logger.info("Downsampling %s training data to %d rows to avoid CPU explanation bottlenecks...", self.name, max_samples)
+            rng = np.random.RandomState(self.random_state)
+            indices = rng.choice(X.index, size=max_samples, replace=False)
+            X_subset = X.loc[indices, numeric_cols]
+            y_subset = y.loc[indices]
+        else:
+            X_subset = X[numeric_cols]
+            y_subset = y
+
+        # Fill NaNs for classifier model
+        X_imputed = X_subset.fillna(0.0)
+
+        # Baseline model training setup
+        from sklearn.ensemble import RandomForestClassifier
+        model = RandomForestClassifier(
+            n_estimators=20,
+            max_depth=5,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+
+        n_features = len(numeric_cols)
+        hits = np.zeros(n_features)
+        
+        # Track statistics across iterations
+        rng = np.random.RandomState(self.random_state)
+        for i in range(self.n_iterations):
+            # Create shadow features: shuffle copy of original columns
+            X_shadow = X_imputed.copy()
+            for col in X_shadow.columns:
+                X_shadow[col] = rng.permutation(X_shadow[col].values)
+            X_shadow.columns = [f"shadow_{c}" for c in numeric_cols]
+
+            # Concatenate original and shadow features side-by-side
+            X_merged = pd.concat([X_imputed, X_shadow], axis=1)
+
+            # Fit estimator
+            model.fit(X_merged, y_subset)
+            importances = model.feature_importances_
+
+            # Extract original and shadow importances
+            orig_imp = importances[:n_features]
+            shad_imp = importances[n_features:]
+
+            # Maximum shadow features importance
+            max_shadow_imp = float(np.max(shad_imp)) if len(shad_imp) > 0 else 0.0
+
+            # Record hits where original > max shadow
+            hits += (orig_imp > max_shadow_imp).astype(int)
+
+        # Scores range between 0.0 and 1.0 (hitrate)
+        scores = hits / float(self.n_iterations)
+        self.boruta_scores_ = dict(zip(numeric_cols, scores))
+
+        selected_numeric = []
+        dropped_numeric = []
+        for col, score in self.boruta_scores_.items():
+            if score >= self.threshold:
+                selected_numeric.append(col)
+            else:
+                dropped_numeric.append(col)
+
+        non_numeric = list(X.select_dtypes(exclude=[np.number]).columns)
+
+        self.selected_features_ = selected_numeric + non_numeric
+        self.dropped_features_ = dropped_numeric
+
+        logger.info("%s: Retained %d, Dropped %d low contribution features.", self.name, len(self.selected_features_), len(self.dropped_features_))
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        cols = [c for c in X.columns if c in self.selected_features_]
+        return X[cols]
+
+
+
 
 
 
