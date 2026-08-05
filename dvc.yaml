@@ -908,6 +908,26 @@ stages:
       - .github/workflows/ci_cd.yml
       - reports/cicd/cicd_automation_summary.json
 
+  documentation:
+    cmd: python3 -m src.pipelines.run_documentation_generator
+    deps:
+      - src/pipelines/run_documentation_generator.py
+      - src/utils/docs_generator.py
+      - README.md
+      - CONTRIBUTING.md
+      - docs/installation.md
+      - docs/project_structure.md
+      - docs/data_dictionary.md
+      - docs/feature_dictionary.md
+      - docs/training_guide.md
+      - docs/evaluation_guide.md
+      - docs/deployment_guide.md
+      - docs/api_documentation.md
+      - docs/troubleshooting_guide.md
+      - docs/adrs/ADR-001-system-architecture.md
+    outs:
+      - reports/docs/documentation_suite_summary.json
+
 
 
 
