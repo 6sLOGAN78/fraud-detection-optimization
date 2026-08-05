@@ -1,4 +1,4 @@
-"""Utils package for IEEE-CIS Fraud Detection project (Parts 13 & 14)."""
+"""Utils package for IEEE-CIS Fraud Detection project (Parts 13, 14, 15 & 16)."""
 
 from src.utils.testing_framework import (
     TestingStrategyPreExecutionGate,
@@ -32,6 +32,25 @@ from src.utils.release_management import (
     InfrastructureAsCodeValidator,
     ReleaseManager,
 )
+from src.utils.docs_generator import (
+    DocumentationStrategyGate,
+    DocumentationSuiteGenerator,
+)
+from src.utils.security_framework import (
+    SecurityPreExecutionGate,
+    IdentityAccessManager,
+    SecretsManager,
+    EncryptionEngine,
+)
+from src.utils.compliance_governance import (
+    AuditLogger,
+    ComplianceChecker,
+    ThreatModelEngine,
+    PIIMasker,
+)
+from src.utils.disaster_recovery import (
+    DisasterRecoveryManager,
+)
 
 __all__ = [
     "TestingStrategyPreExecutionGate",
@@ -54,4 +73,15 @@ __all__ = [
     "ContinuousDeploymentPipeline",
     "InfrastructureAsCodeValidator",
     "ReleaseManager",
+    "DocumentationStrategyGate",
+    "DocumentationSuiteGenerator",
+    "SecurityPreExecutionGate",
+    "IdentityAccessManager",
+    "SecretsManager",
+    "EncryptionEngine",
+    "AuditLogger",
+    "ComplianceChecker",
+    "ThreatModelEngine",
+    "PIIMasker",
+    "DisasterRecoveryManager",
 ]

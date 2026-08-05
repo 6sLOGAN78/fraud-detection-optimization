@@ -928,6 +928,16 @@ stages:
     outs:
       - reports/docs/documentation_suite_summary.json
 
+  security_governance:
+    cmd: python3 -m src.pipelines.run_security_governance
+    deps:
+      - src/pipelines/run_security_governance.py
+      - src/utils/security_framework.py
+      - src/utils/compliance_governance.py
+      - src/utils/disaster_recovery.py
+    outs:
+      - reports/security/security_governance_summary.json
+
 
 
 
