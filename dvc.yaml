@@ -839,6 +839,28 @@ stages:
     outs:
       - reports/models/advanced_evaluation_report.json
 
+  explainability:
+    cmd: python3 -m src.pipelines.run_explainability --n-samples 1000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_explainability.py
+      - src/explainability/architecture.py
+      - src/explainability/shap_engine.py
+      - src/explainability/partial_dependence.py
+      - src/explainability/transparency.py
+    outs:
+      - reports/explainability/random_forest_baseline_explainability_report.json
+
+  experiment_tracking:
+    cmd: python3 -m src.pipelines.run_experiment_tracking --n-samples 2000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_experiment_tracking.py
+      - src/monitoring/experiment_tracker.py
+      - src/monitoring/logging_engine.py
+      - src/monitoring/model_registry.py
+      - src/monitoring/reproducibility.py
+
 
 
 
