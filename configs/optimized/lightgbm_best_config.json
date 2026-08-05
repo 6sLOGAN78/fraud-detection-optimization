@@ -1,44 +1,44 @@
 {
   "model_name": "lightgbm",
   "metric_name": "roc_auc",
-  "best_score": 0.7963746846772826,
+  "best_score": 0.8750957719311071,
   "hyperparameters": {
-    "n_estimators": 350,
-    "max_depth": 10,
-    "num_leaves": 19,
-    "learning_rate": 0.2708160864249968,
-    "subsample": 0.9162213204002109,
-    "colsample_bytree": 0.6061695553391381,
-    "reg_alpha": 4.329370014459266e-07,
-    "reg_lambda": 4.4734294104626844e-07
+    "n_estimators": 200,
+    "max_depth": 8,
+    "num_leaves": 119,
+    "learning_rate": 0.02692655251486473,
+    "subsample": 0.8059264473611898,
+    "colsample_bytree": 0.569746930326021,
+    "reg_alpha": 4.258943089524393e-06,
+    "reg_lambda": 1.9826980964985924e-05
   },
   "metadata": {
     "model_type": "lightgbm",
-    "total_trials": 3,
-    "completed_trials": 3,
+    "total_trials": 5,
+    "completed_trials": 5,
     "pruned_trials": 0,
-    "best_value": 0.7963746846772826,
+    "best_value": 0.8750957719311071,
     "best_params": {
-      "n_estimators": 350,
-      "max_depth": 10,
-      "num_leaves": 19,
-      "learning_rate": 0.2708160864249968,
-      "subsample": 0.9162213204002109,
-      "colsample_bytree": 0.6061695553391381,
-      "reg_alpha": 4.329370014459266e-07,
-      "reg_lambda": 4.4734294104626844e-07
+      "n_estimators": 200,
+      "max_depth": 8,
+      "num_leaves": 119,
+      "learning_rate": 0.02692655251486473,
+      "subsample": 0.8059264473611898,
+      "colsample_bytree": 0.569746930326021,
+      "reg_alpha": 4.258943089524393e-06,
+      "reg_lambda": 1.9826980964985924e-05
     },
-    "mean_value": 0.7821093654853245,
-    "std_value": 0.013351532564768032,
+    "mean_value": 0.8636657937388048,
+    "std_value": 0.009296080662670504,
     "param_importances": {
-      "max_depth": 0.3153784932919175,
-      "learning_rate": 0.21217354764073518,
-      "colsample_bytree": 0.1452506638536507,
-      "reg_lambda": 0.13379054960837566,
-      "n_estimators": 0.06999646539980618,
-      "num_leaves": 0.06689527480418765,
-      "subsample": 0.03979118592954548,
-      "reg_alpha": 0.01672381947178163
+      "learning_rate": 0.33747548030270536,
+      "num_leaves": 0.14461902704805493,
+      "n_estimators": 0.14096397653679504,
+      "colsample_bytree": 0.10672987495186577,
+      "reg_alpha": 0.07698656783446742,
+      "subsample": 0.07597844035699153,
+      "max_depth": 0.06976722613674771,
+      "reg_lambda": 0.04747940683237215
     }
   }
 }

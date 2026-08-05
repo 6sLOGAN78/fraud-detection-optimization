@@ -1,24 +1,24 @@
-best_score: 0.7795173821556914
+best_score: 0.8840095359920866
 hyperparameters:
-  colsample_bytree: 0.5780093202212182
-  gamma: 2.275053705838343e-07
-  learning_rate: 0.1205712628744377
-  max_depth: 10
-  min_child_weight: 1
-  n_estimators: 200
-  subsample: 0.7993292420985183
+  colsample_bytree: 0.8925879806965068
+  gamma: 5.457028747569545e-07
+  learning_rate: 0.03476649150592621
+  max_depth: 5
+  min_child_weight: 6
+  n_estimators: 100
+  subsample: 0.728034992108518
 metadata:
   best_params:
-    colsample_bytree: 0.5780093202212182
-    gamma: 2.275053705838343e-07
-    learning_rate: 0.1205712628744377
-    max_depth: 10
-    min_child_weight: 1
-    n_estimators: 200
-    subsample: 0.7993292420985183
-  best_value: 0.7795173821556914
-  completed_trials: 3
-  mean_value: 0.7723907731041934
+    colsample_bytree: 0.8925879806965068
+    gamma: 5.457028747569545e-07
+    learning_rate: 0.03476649150592621
+    max_depth: 5
+    min_child_weight: 6
+    n_estimators: 100
+    subsample: 0.728034992108518
+  best_value: 0.8840095359920866
+  completed_trials: 5
+  mean_value: 0.8710598670683616
   model_type: xgboost
   param_importances:
     colsample_bytree: !!python/object/apply:numpy.core.multiarray.scalar
@@ -37,33 +37,33 @@ metadata:
       - -1
       - 0
     - !!binary |
-      CaMV96iawT8=
+      CF7JwoxHsT8=
     gamma: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      OA8bFMyYxj8=
+      fTlB28+M0D8=
     learning_rate: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      AAAAAAAAAAA=
+      NjUCKNVmkT8=
     max_depth: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      pfie9AxapD8=
+      87JCK68kuT8=
     min_child_weight: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      ni3jeccgyT8=
+      v5V8Kyg9sD8=
     n_estimators: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      CmGm0xKXwT8=
+      zuLcDF4Eyj8=
     subsample: !!python/object/apply:numpy.core.multiarray.scalar
     - *id001
     - !!binary |
-      eQAPtRb/0z8=
+      GQhuxTqw0j8=
   pruned_trials: 0
-  std_value: 0.008998190528712065
-  total_trials: 3
+  std_value: 0.010546402989182942
+  total_trials: 5
 metric_name: roc_auc
 model_name: xgboost
