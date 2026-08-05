@@ -938,6 +938,18 @@ stages:
     outs:
       - reports/security/security_governance_summary.json
 
+  advanced_ai:
+    cmd: python3 -m src.pipelines.run_advanced_ai --n-samples 1000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_advanced_ai.py
+      - src/models/advanced_ensemble.py
+      - src/models/graph_engine.py
+      - src/models/deep_learning.py
+      - src/models/advanced_ai.py
+    outs:
+      - reports/advanced_ai/advanced_ai_summary.json
+
 
 
 
