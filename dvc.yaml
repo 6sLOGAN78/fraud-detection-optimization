@@ -809,6 +809,37 @@ stages:
       - data/models/v1/candidate_model.pkl
       - reports/models/candidate_selection_report.html
 
+  hyperparameter_optimization:
+    cmd: python3 -m src.pipelines.run_optimization --n-trials 10 --n-samples 5000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_optimization.py
+      - src/optimization/architecture.py
+      - src/optimization/search_space.py
+      - src/optimization/bayesian.py
+      - src/optimization/optuna_framework.py
+      - src/optimization/early_stopping.py
+      - src/optimization/pruning.py
+      - src/optimization/parallel.py
+      - src/optimization/monitoring.py
+      - src/optimization/registry.py
+    outs:
+      - configs/optimized/lightgbm_best_config.json
+      - configs/optimized/xgboost_best_config.json
+
+  advanced_evaluation:
+    cmd: python3 -m src.pipelines.run_advanced_evaluation --n-samples 5000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_advanced_evaluation.py
+      - src/evaluation/framework.py
+      - src/evaluation/metrics.py
+      - src/evaluation/diagnostics.py
+      - src/evaluation/business.py
+    outs:
+      - reports/models/advanced_evaluation_report.json
+
+
 
 
 
