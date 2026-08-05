@@ -1,0 +1,44 @@
+{
+  "model_name": "lightgbm",
+  "metric_name": "roc_auc",
+  "best_score": 0.7963746846772826,
+  "hyperparameters": {
+    "n_estimators": 350,
+    "max_depth": 10,
+    "num_leaves": 19,
+    "learning_rate": 0.2708160864249968,
+    "subsample": 0.9162213204002109,
+    "colsample_bytree": 0.6061695553391381,
+    "reg_alpha": 4.329370014459266e-07,
+    "reg_lambda": 4.4734294104626844e-07
+  },
+  "metadata": {
+    "model_type": "lightgbm",
+    "total_trials": 3,
+    "completed_trials": 3,
+    "pruned_trials": 0,
+    "best_value": 0.7963746846772826,
+    "best_params": {
+      "n_estimators": 350,
+      "max_depth": 10,
+      "num_leaves": 19,
+      "learning_rate": 0.2708160864249968,
+      "subsample": 0.9162213204002109,
+      "colsample_bytree": 0.6061695553391381,
+      "reg_alpha": 4.329370014459266e-07,
+      "reg_lambda": 4.4734294104626844e-07
+    },
+    "mean_value": 0.7821093654853245,
+    "std_value": 0.013351532564768032,
+    "param_importances": {
+      "max_depth": 0.3153784932919175,
+      "learning_rate": 0.21217354764073518,
+      "colsample_bytree": 0.1452506638536507,
+      "reg_lambda": 0.13379054960837566,
+      "n_estimators": 0.06999646539980618,
+      "num_leaves": 0.06689527480418765,
+      "subsample": 0.03979118592954548,
+      "reg_alpha": 0.01672381947178163
+    }
+  }
+}

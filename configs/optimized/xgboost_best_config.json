@@ -1,0 +1,41 @@
+{
+  "model_name": "xgboost",
+  "metric_name": "roc_auc",
+  "best_score": 0.7795173821556914,
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 10,
+    "learning_rate": 0.1205712628744377,
+    "subsample": 0.7993292420985183,
+    "colsample_bytree": 0.5780093202212182,
+    "gamma": 2.275053705838343e-07,
+    "min_child_weight": 1
+  },
+  "metadata": {
+    "model_type": "xgboost",
+    "total_trials": 3,
+    "completed_trials": 3,
+    "pruned_trials": 0,
+    "best_value": 0.7795173821556914,
+    "best_params": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "learning_rate": 0.1205712628744377,
+      "subsample": 0.7993292420985183,
+      "colsample_bytree": 0.5780093202212182,
+      "gamma": 2.275053705838343e-07,
+      "min_child_weight": 1
+    },
+    "mean_value": 0.7723907731041934,
+    "std_value": 0.008998190528712065,
+    "param_importances": {
+      "subsample": 0.31244437867645264,
+      "min_child_weight": 0.1963128419068711,
+      "gamma": 0.17653799993251496,
+      "colsample_bytree": 0.1375323492495897,
+      "n_estimators": 0.13742289862126028,
+      "max_depth": 0.03974953161331144,
+      "learning_rate": 0.0
+    }
+  }
+}

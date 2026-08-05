@@ -1,0 +1,69 @@
+best_score: 0.7795173821556914
+hyperparameters:
+  colsample_bytree: 0.5780093202212182
+  gamma: 2.275053705838343e-07
+  learning_rate: 0.1205712628744377
+  max_depth: 10
+  min_child_weight: 1
+  n_estimators: 200
+  subsample: 0.7993292420985183
+metadata:
+  best_params:
+    colsample_bytree: 0.5780093202212182
+    gamma: 2.275053705838343e-07
+    learning_rate: 0.1205712628744377
+    max_depth: 10
+    min_child_weight: 1
+    n_estimators: 200
+    subsample: 0.7993292420985183
+  best_value: 0.7795173821556914
+  completed_trials: 3
+  mean_value: 0.7723907731041934
+  model_type: xgboost
+  param_importances:
+    colsample_bytree: !!python/object/apply:numpy.core.multiarray.scalar
+    - &id001 !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - false
+      - true
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - !!binary |
+      CaMV96iawT8=
+    gamma: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      OA8bFMyYxj8=
+    learning_rate: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      AAAAAAAAAAA=
+    max_depth: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      pfie9AxapD8=
+    min_child_weight: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      ni3jeccgyT8=
+    n_estimators: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      CmGm0xKXwT8=
+    subsample: !!python/object/apply:numpy.core.multiarray.scalar
+    - *id001
+    - !!binary |
+      eQAPtRb/0z8=
+  pruned_trials: 0
+  std_value: 0.008998190528712065
+  total_trials: 3
+metric_name: roc_auc
+model_name: xgboost
