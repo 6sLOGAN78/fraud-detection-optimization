@@ -886,6 +886,17 @@ stages:
     outs:
       - reports/monitoring/mlops_monitoring_summary.json
 
+  qa_testing:
+    cmd: python3 -m src.pipelines.run_qa_testing
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_qa_testing.py
+      - src/utils/testing_framework.py
+      - src/utils/validation_testing.py
+      - src/utils/acceptance_testing.py
+    outs:
+      - reports/testing/qa_quality_gate_summary.json
+
 
 
 
