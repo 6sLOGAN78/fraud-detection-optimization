@@ -874,6 +874,18 @@ stages:
       - data/processed/batch_predictions_v1.parquet
       - artifacts/deployment/v1/model.joblib
 
+  mlops_monitoring:
+    cmd: python3 -m src.pipelines.run_mlops_monitoring --n-samples 2000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_mlops_monitoring.py
+      - src/monitoring/service_monitor.py
+      - src/monitoring/drift_engine.py
+      - src/monitoring/alerting.py
+      - src/monitoring/lifecycle.py
+    outs:
+      - reports/monitoring/mlops_monitoring_summary.json
+
 
 
 
