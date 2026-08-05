@@ -4,6 +4,16 @@ Welcome to the core codebase of the **IEEE-CIS Financial Fraud Detection & Optim
 
 ---
 
+## 📊 Package Performance & Visual Data Highlights
+
+### Candidate Model Benchmark Comparison
+![Model Benchmark Comparison](../reports/images/model_comparison_benchmark.png)
+
+### Global SHAP Feature Importance Ranking
+![Global SHAP Feature Importance](../reports/images/shap_feature_importance.png)
+
+---
+
 ## 🏛️ Sub-Package Architecture & Distributed Data Flow
 
 ```
@@ -48,19 +58,19 @@ Welcome to the core codebase of the **IEEE-CIS Financial Fraud Detection & Optim
 
 ## 📦 Sub-Package Directory Index
 
-| Directory | Core Purpose | Key Modules |
-| :--- | :--- | :--- |
-| [`src/data/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/data) | Data ingestion, memory optimization, type downcasting & cleaning | `ingestion.py`, `cleaning.py`, `pipeline.py` |
-| [`src/eda/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/eda) | 17 Automated EDA Analyzers & HTML Report Generator | `profiling.py`, `target.py`, `drift.py`, `leakage.py` |
-| [`src/features/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/features) | Enterprise Feature Store & Feature Selection Engine | `feature_store.py`, `feature_selection.py`, `encodings.py` |
-| [`src/models/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/models) | Candidate Models, Stacking, Deep Learning, GNN & RL | `lightgbm_model.py`, `ensemble.py`, `advanced_ai.py` |
-| [`src/optimization/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/optimization) | Optuna Bayesian Hyperparameter Optimization & Pruning | `bayesian.py`, `optuna_framework.py`, `pruning.py` |
-| [`src/evaluation/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/evaluation) | Metrics, Calibration, Diagnostics & Financial Net Savings Matrix | `framework.py`, `metrics.py`, `business.py` |
-| [`src/explainability/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/explainability) | SHAP Global/Local, PDP, ICE & Disparate Impact Fairness | `shap_engine.py`, `transparency.py` |
-| [`src/monitoring/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/monitoring) | MLflow Tracking, PSI Drift, Service SLA & Auto-Retraining | `experiment_tracker.py`, `drift_engine.py`, `alerting.py` |
-| [`src/deployment/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/deployment) | Production FastAPI REST Microservice & Batch Scoring Engine | `app.py`, `inference.py`, `engine.py` |
-| [`src/pipelines/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/pipelines) | DVC Stage Execution Command Runners | `run_data_pipeline.py`, `run_deployment.py` |
-| [`src/utils/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/utils) | QA Framework, CI/CD Automation, Security & Governance | `security_framework.py`, `testing_framework.py` |
+| Directory | Core Purpose | Key Modules | Key Visuals / Output |
+| :--- | :--- | :--- | :--- |
+| [`src/data/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/data) | Data ingestion, memory optimization, type downcasting & cleaning | `ingestion.py`, `cleaning.py`, `pipeline.py` | Target & Missing distribution plots |
+| [`src/eda/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/eda) | 17 Automated EDA Analyzers & HTML Report Generator | `profiling.py`, `target.py`, `drift.py`, `leakage.py` | HTML Dashboards & 17 plot families |
+| [`src/features/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/features) | Enterprise Feature Store & Feature Selection Engine | `feature_store.py`, `feature_selection.py`, `encodings.py` | Correlation Heatmaps & Feature Store |
+| [`src/models/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/models) | Candidate Models, Stacking, Deep Learning, GNN & RL | `lightgbm_model.py`, `ensemble.py`, `advanced_ai.py` | ROC/PR Curves & Benchmark Charts |
+| [`src/optimization/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/optimization) | Optuna Bayesian Hyperparameter Optimization & Pruning | `bayesian.py`, `optuna_framework.py`, `pruning.py` | Optuna Hyperparameter Trials |
+| [`src/evaluation/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/evaluation) | Metrics, Calibration, Diagnostics & Financial Net Savings Matrix | `framework.py`, `metrics.py`, `business.py` | Confusion & Cost-Benefit Matrices |
+| [`src/explainability/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/explainability) | SHAP Global/Local, PDP, ICE & Disparate Impact Fairness | `shap_engine.py`, `transparency.py` | SHAP Summary & Partial Dependence |
+| [`src/monitoring/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/monitoring) | MLflow Tracking, PSI Drift, Service SLA & Auto-Retraining | `experiment_tracker.py`, `drift_engine.py`, `alerting.py` | Feature Drift (PSI/KS) & Alert Logs |
+| [`src/deployment/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/deployment) | Production FastAPI REST Microservice & Batch Scoring Engine | `app.py`, `inference.py`, `engine.py` | Latency SLA Distribution (<10ms) |
+| [`src/pipelines/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/pipelines) | DVC Stage Execution Command Runners | `run_data_pipeline.py`, `run_deployment.py` | 17 DVC Pipeline Stages |
+| [`src/utils/`](file:///home/logan78/efforts/projects/ongoing/fraud-detection-optimization/src/utils) | QA Framework, CI/CD Automation, Security & Governance | `security_framework.py`, `testing_framework.py` | 304/304 Unit Tests & Audit Trail |
 
 ---
 

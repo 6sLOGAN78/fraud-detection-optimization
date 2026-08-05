@@ -4,6 +4,15 @@ The `src/monitoring/` package manages experiment tracking with MLflow, populatio
 
 ---
 
+## 📊 Drift Detection & Data Integrity Visuals
+
+### Kolmogorov-Smirnov (KS) Feature Drift Shift Plots
+The monitoring engine tracks feature distribution stability over time using Population Stability Index (PSI) and Kolmogorov-Smirnov (KS) tests to detect concept or covariate drift before accuracy decays.
+
+![KS Drift Shifts](../../reports/eda/drift/plots/ks_drift_shifts.png)
+
+---
+
 ## 📈 Monitoring & Retraining Flow
 
 ```

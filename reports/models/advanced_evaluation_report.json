@@ -1,0 +1,15 @@
+{
+  "roc_auc": 1.0,
+  "pr_auc": 1.0,
+  "precision": 1.0,
+  "recall": 0.9944444444444445,
+  "f1_score": 0.9972144846796658,
+  "mcc": 0.9971149236497221,
+  "ks_statistic": 1.0,
+  "expected_calibration_error": 0.01911,
+  "brier_score": 0.00404,
+  "best_fbeta_threshold": 0.35,
+  "false_positive_rate": 0.0,
+  "robustness_score": 0.8296,
+  "net_financial_savings": 24427.58
+}

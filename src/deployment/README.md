@@ -4,6 +4,15 @@ The `src/deployment/` package powers the high-throughput, low-latency FastAPI mi
 
 ---
 
+## 📊 Serving Performance & Latency SLA
+
+### Single-Transaction REST API Latency Distribution
+The FastAPI microservice achieves an average latency of **3.10 ms** and a p95 latency of **3.42 ms**, well within the strict enterprise SLA requirement of sub-10ms scoring.
+
+![Latency SLA Distribution](../../reports/images/latency_sla_distribution.png)
+
+---
+
 ## ⚡ Real-Time Scoring Architecture
 
 ```

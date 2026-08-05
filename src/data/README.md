@@ -4,6 +4,25 @@ The `src/data/` package handles dataset loading, vectorized memory optimization,
 
 ---
 
+## 📊 Ingestion & Quality Data Diagnostics
+
+### 1. Class Target Imbalance
+The target distribution reveals a severe class imbalance with only ~3.5% of transactions marked as fraud, requiring robust calibration and specialized recall-oriented thresholds.
+
+![Target Fraud Distribution](../../reports/eda/target/fraud_distribution_plot.png)
+
+### 2. Transaction Amt Risk Analysis
+Log-scale transaction amount distributions highlight a higher concentration of fraudulent transactions at specific transaction sizes.
+
+![Transaction Amount vs Fraud](../../reports/eda/target/fraud_amount_plot.png)
+
+### 3. Missing Value Percentages by Feature Family
+Distribution of missing data across raw transaction attributes, guiding intermediate imputation strategies.
+
+![Missing Bar Chart](../../reports/eda/quality/missing_bar_chart.png)
+
+---
+
 ## 🔄 Processing Architecture
 
 ```

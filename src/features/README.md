@@ -4,6 +4,20 @@ The `src/features/` package builds the production feature store and executes mul
 
 ---
 
+## 📊 Feature Visualizations & Selection Analysis
+
+### 1. Global SHAP Feature Importance
+The feature selection engine identifies key drivers of fraud probability using SHAP importance. `TransactionAmt` (transaction amount), `card1`, and `card2` emerge as the primary discriminators.
+
+![Global SHAP Feature Importance](../../reports/images/shap_feature_importance.png)
+
+### 2. Multi-Collinearity & Feature Correlation Matrix
+Heatmap of Pearson correlation coefficients across engineered feature families. Highly correlated features are pruned to avoid model instability and overfitting.
+
+![Pearson Correlation Heatmap](../../reports/eda/correlation/plots/pearson_heatmap.png)
+
+---
+
 ## 💡 Feature Family Formulations
 
 ```
