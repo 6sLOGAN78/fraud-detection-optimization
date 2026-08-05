@@ -861,6 +861,19 @@ stages:
       - src/monitoring/model_registry.py
       - src/monitoring/reproducibility.py
 
+  deployment:
+    cmd: python3 -m src.pipelines.run_deployment --n-samples 1000
+    deps:
+      - data/interim/train_cleaned.parquet
+      - src/pipelines/run_deployment.py
+      - src/deployment/inference.py
+      - src/deployment/engine.py
+      - src/deployment/validation.py
+      - src/deployment/app.py
+    outs:
+      - data/processed/batch_predictions_v1.parquet
+      - artifacts/deployment/v1/model.joblib
+
 
 
 
