@@ -897,6 +897,17 @@ stages:
     outs:
       - reports/testing/qa_quality_gate_summary.json
 
+  cicd_automation:
+    cmd: python3 -m src.pipelines.run_cicd_automation
+    deps:
+      - src/pipelines/run_cicd_automation.py
+      - src/utils/cicd_architecture.py
+      - src/utils/quality_security.py
+      - src/utils/release_management.py
+    outs:
+      - .github/workflows/ci_cd.yml
+      - reports/cicd/cicd_automation_summary.json
+
 
 
 
